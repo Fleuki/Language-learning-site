@@ -1,0 +1,11 @@
+const fs=require('fs'),crypto=require('crypto');
+const h=fs.readFileSync('index.html','utf8');
+const src=h.slice(h.indexOf('const LESSONS'),h.indexOf('const ICON_SAY'));
+const {LESSONS,SCEN}=new Function(src+';return {LESSONS,SCEN}')();
+const set=new Set();
+LESSONS.forEach(l=>l.items.forEach(x=>{set.add(x.it);x.it.split(/\s+/).forEach(w=>set.add(w));}));
+SCEN.forEach(s=>set.add(s.open.it));
+set.add('Ciao! Come stai? Io sto bene, grazie.');
+const map={};[...set].forEach(t=>map[t]=crypto.createHash('sha1').update(t).digest('hex').slice(0,10));
+fs.writeFileSync('texts.json',JSON.stringify(map,null,1));
+console.log(set.size);

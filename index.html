@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Parliamo — итальянский с нуля</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EDF2F4; --surface:#FFFFFF; --ink:#14202B; --muted:#5B6873; --line:#D3DCE1;
+  --sea:#1E5A7A; --sea-ink:#FFFFFF; --lemon:#F2C230; --lemon-soft:#FBF0C6;
+  --olive:#3F7A35; --ok-bg:#E3F0DD; --brick:#B5452C; --bad-bg:#F8E1DA;
+  --tabh:64px;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0E1920; --surface:#16252F; --ink:#E7EEF1; --muted:#94A4AF; --line:#25394A;
+    --sea:#6FB3D6; --sea-ink:#0E1920; --lemon:#F2C230; --lemon-soft:#3A3417;
+    --olive:#8DC273; --ok-bg:#1D3320; --brick:#E8826A; --bad-bg:#3B201A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0E1920; --surface:#16252F; --ink:#E7EEF1; --muted:#94A4AF; --line:#25394A;
+  --sea:#6FB3D6; --sea-ink:#0E1920; --lemon:#F2C230; --lemon-soft:#3A3417;
+  --olive:#8DC273; --ok-bg:#1D3320; --brick:#E8826A; --bad-bg:#3B201A;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'Onest',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+body.locked{overflow:hidden}
+.it{font-family:'Bodoni Moda','Didot','Bodoni 72',Georgia,serif;font-optical-sizing:auto}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+button:disabled{cursor:default}
+:focus-visible{outline:3px solid var(--lemon);outline-offset:2px;border-radius:6px}
+main{max-width:560px;margin:0 auto;padding:20px 20px calc(var(--tabh) + 32px)}
+.view[hidden]{display:none}
+.lead{color:var(--muted);margin:6px 0 0;max-width:36ch}
+
+/* Course */
+.greet{font-size:clamp(3.2rem,15vw,4.6rem);font-style:italic;font-weight:500;line-height:1;margin:8px 0 6px;letter-spacing:-.01em}
+.stats{display:flex;gap:28px;margin:22px 0 30px;padding:0}
+.stats div{margin:0}
+.stats dt{font-size:.8rem;color:var(--muted)}
+.stats dd{margin:0;font-size:1.6rem;font-weight:600}
+.path{list-style:none;margin:0;padding:0;position:relative}
+.path::before{content:"";position:absolute;left:21px;top:22px;bottom:22px;width:2px;background:var(--line)}
+.path li{position:relative}
+.lrow{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:12px 0}
+.num{flex:none;width:44px;height:44px;border-radius:50%;display:grid;place-items:center;font-weight:600;background:var(--bg);border:2px solid var(--line);color:var(--muted);position:relative;z-index:1}
+.done .num{background:var(--olive);border-color:var(--olive);color:var(--surface)}
+.current .num{background:var(--sea);border-color:var(--sea);color:var(--sea-ink)}
+.ltext{flex:1;display:flex;flex-direction:column;min-width:0}
+.ltitle{font-size:1.45rem;line-height:1.2}
+.lsub{font-size:.88rem;color:var(--muted)}
+.locked .ltitle{color:var(--muted)}
+.go{flex:none;background:var(--lemon);color:#14202B;font-weight:600;font-size:.9rem;padding:8px 14px;border-radius:999px}
+.current .lrow{padding:16px 14px 16px 0}
+
+/* Tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--line);display:flex;justify-content:center;padding-bottom:env(safe-area-inset-bottom,0px);z-index:5}
+.tabs-in{display:flex;width:100%;max-width:560px}
+.tab{flex:1;height:var(--tabh);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:.78rem;color:var(--muted);position:relative}
+.tab svg{width:22px;height:22px}
+.tab[aria-current="page"]{color:var(--sea);font-weight:600}
+.tab .badge{position:absolute;top:8px;left:calc(50% + 6px);background:var(--brick);color:#fff;font-size:.68rem;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 5px}
+
+/* Settings */
+.chome{position:relative}
+.topctl{display:flex;justify-content:flex-end;align-items:center;gap:10px}
+.tab .badge[hidden]{display:none}
+.langsw{display:flex;background:var(--surface);border-radius:999px;padding:3px}
+.langsw button{font-size:.8rem;font-weight:600;padding:7px 11px;border-radius:999px;color:var(--muted)}
+.langsw button[aria-pressed="true"]{background:var(--sea);color:var(--sea-ink)}
+.gear{width:44px;height:44px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--sea)}
+.gear svg{width:22px;height:22px}
+#settings{position:fixed;inset:0;background:var(--bg);z-index:12;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#settings[hidden]{display:none}
+.stitle-top{font-weight:600;font-size:1.1rem}
+.vlist{display:grid;gap:8px;margin:12px 0 26px}
+.vrow{display:flex;align-items:center;gap:12px;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:10px 12px}
+.vrow[aria-checked="true"]{border-color:var(--sea);box-shadow:inset 0 0 0 1px var(--sea)}
+.vpick{flex:1;text-align:left;display:flex;flex-direction:column;min-width:0}
+.vname{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.vmeta{font-size:.82rem;color:var(--muted)}
+.vmeta b{color:var(--olive);font-weight:600}
+.h3{font-weight:600;margin:6px 0 4px}
+.muted{color:var(--muted);font-size:.92rem;margin:0}
+.rate{display:flex;align-items:center;gap:12px;margin:12px 0 8px}
+.rate input{flex:1;accent-color:var(--sea)}
+.rate output{min-width:3.5em;text-align:right;font-weight:600}
+.help{background:var(--surface);border-radius:14px;padding:14px 16px;font-size:.92rem;margin-top:8px}
+.help p{margin:0 0 8px}.help p:last-child{margin:0}
+
+/* Lesson overlay */
+#lesson{position:fixed;inset:0;background:var(--bg);z-index:10;display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px)}
+#lesson[hidden]{display:none}
+.ltop{display:flex;align-items:center;gap:14px;padding:14px 20px;max-width:560px;width:100%;margin:0 auto}
+.x{width:36px;height:36px;display:grid;place-items:center;border-radius:50%;color:var(--muted)}
+.x svg{width:22px;height:22px}
+.track{flex:1;height:10px;background:var(--line);border-radius:5px;overflow:hidden}
+#bar{height:100%;width:0;background:var(--olive);border-radius:5px;transition:width .3s ease}
+.lbody{flex:1;overflow-y:auto;padding:12px 20px 20px;max-width:560px;width:100%;margin:0 auto}
+.lfoot{padding:12px 20px calc(16px + env(safe-area-inset-bottom,0px));max-width:560px;width:100%;margin:0 auto}
+.kicker{color:var(--muted);margin:8px 0 18px;font-weight:500}
+.big{font-size:clamp(2.6rem,12vw,3.6rem);font-style:italic;font-weight:500;line-height:1.05;margin:0}
+.ru-sub{font-size:1.2rem;margin:6px 0 24px;color:var(--muted)}
+.tip{background:var(--surface);border-left:4px solid var(--lemon);padding:16px 18px;border-radius:4px 12px 12px 4px;line-height:1.6}
+.word{font-size:clamp(2.3rem,11vw,3.2rem);font-weight:500;line-height:1.1;margin:18px 0 8px}
+.trans{font-size:1.25rem;margin:0}
+.say{display:inline-grid;place-items:center;width:44px;height:44px;border-radius:50%;background:var(--sea);color:var(--sea-ink);flex:none}
+.say svg{width:22px;height:22px}
+.big-say{width:72px;height:72px}
+.big-say svg{width:34px;height:34px}
+.say.sm{width:32px;height:32px}
+.say.sm svg{width:17px;height:17px}
+.prompt{display:flex;align-items:center;gap:14px;margin-bottom:26px}
+.pword{font-size:2rem;line-height:1.15}
+.pru{font-size:1.45rem;font-weight:500;margin:0 0 24px}
+.opts{display:grid;gap:10px}
+.opt{text-align:left;background:var(--surface);border:2px solid var(--line);border-radius:14px;padding:14px 16px;font-size:1.05rem;transition:border-color .15s}
+.opt.it{font-size:1.3rem}
+.opt[aria-pressed="true"]{border-color:var(--sea);background:var(--surface);box-shadow:inset 0 0 0 1px var(--sea)}
+.opt.right{border-color:var(--olive);background:var(--ok-bg)}
+.opt.wrong{border-color:var(--brick);background:var(--bad-bg)}
+.answer{min-height:64px;border-bottom:2px solid var(--line);display:flex;flex-wrap:wrap;gap:8px;padding:8px 0;margin-bottom:24px}
+.bank{display:flex;flex-wrap:wrap;gap:8px}
+.tok{background:var(--surface);border:2px solid var(--line);border-bottom-width:4px;border-radius:12px;padding:8px 14px;font-size:1.3rem}
+.tok.ghost{visibility:hidden}
+.fb{border-radius:14px;padding:12px 16px;margin-bottom:12px;font-weight:500}
+.fb[hidden]{display:none}
+.fb.ok{background:var(--ok-bg);color:var(--olive)}
+.fb.bad{background:var(--bad-bg);color:var(--brick)}
+.fb .it{font-size:1.2rem;display:block;color:var(--ink);font-weight:500}
+.primary{width:100%;background:var(--sea);color:var(--sea-ink);font-weight:600;font-size:1.05rem;padding:16px;border-radius:14px}
+.primary:disabled{opacity:.4}
+.result{font-size:1.1rem}
+
+/* Review */
+.rv-head{margin:18px 0 26px}
+.rv-head h1{font-size:2.6rem;font-style:italic;font-weight:500;margin:0;line-height:1.1}
+.bignum{font-size:4.5rem;font-weight:700;line-height:1;margin:0;color:var(--sea)}
+.empty{background:var(--surface);border-radius:16px;padding:22px}
+.empty p{margin:0 0 16px}
+.rv-top{display:flex;justify-content:space-between;align-items:center;color:var(--muted);margin:10px 0 18px}
+.flash{background:var(--surface);border-radius:20px;padding:30px 22px;text-align:center;min-height:260px;display:flex;flex-direction:column;align-items:center;justify-content:center;margin-bottom:18px}
+.flash .word{margin:18px 0 6px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.secondary{background:var(--surface);border:2px solid var(--line);font-weight:600;padding:14px;border-radius:14px}
+.link{color:var(--sea);font-weight:600}
+.tap{cursor:pointer;text-decoration:underline dotted var(--muted);text-decoration-thickness:2px;text-underline-offset:.22em;border-radius:6px;-webkit-tap-highlight-color:transparent}
+.tap.speaking{color:var(--sea);text-decoration-color:var(--sea)}
+.say.speaking{animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 var(--sea)}50%{box-shadow:0 0 0 8px transparent}}
+.pron{color:var(--muted);font-size:1.1rem;margin:2px 0 14px;letter-spacing:.01em}
+.fb .pron{font-size:.95rem;margin:2px 0 0;font-weight:400}
+.toast{position:fixed;left:16px;right:16px;bottom:calc(var(--tabh) + 16px + env(safe-area-inset-bottom,0px));max-width:528px;margin:0 auto;background:var(--ink);color:var(--bg);padding:14px 16px;border-radius:14px;font-size:.92rem;z-index:20}
+.toast[hidden]{display:none}
+
+/* Chat */
+.chead h1{font-size:clamp(2.8rem,13vw,3.8rem);font-style:italic;font-weight:500;margin:18px 0 4px;line-height:1}
+.scen{display:grid;gap:12px;margin-top:26px}
+.scard{text-align:left;background:var(--surface);border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:2px;border:2px solid transparent}
+.scard:hover{border-color:var(--line)}
+.stitle{font-size:1.5rem}
+.sdesc{color:var(--muted);font-size:.93rem}
+.notice{margin-top:20px;color:var(--muted);font-size:.9rem}
+.chatbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:4px 0 16px}
+.chatbar .it{font-size:1.3rem;font-style:italic}
+.msgs{display:flex;flex-direction:column;gap:10px;padding-bottom:12px}
+.msg{max-width:86%;border-radius:18px;padding:12px 15px}
+.msg p{margin:0}
+.msg.ai{background:var(--surface);align-self:flex-start;border-bottom-left-radius:6px}
+.msg.ai .it,.msg.me .it{font-size:1.2rem;line-height:1.35}
+.msg.me{background:var(--sea);color:var(--sea-ink);align-self:flex-end;border-bottom-right-radius:6px}
+.mtools{display:flex;align-items:center;gap:12px;margin-top:8px;font-size:.88rem}
+.mru{color:var(--muted);margin-top:6px!important;font-size:.95rem}
+.corr{align-self:flex-end;max-width:86%;background:var(--lemon-soft);border-radius:12px;padding:10px 14px;font-size:.93rem}
+.corr strong{display:block;font-size:.82rem;margin-bottom:2px}
+.typing{align-self:flex-start;color:var(--muted);font-style:italic;padding:4px 6px}
+.composer{position:sticky;bottom:calc(var(--tabh) + env(safe-area-inset-bottom,0px));background:var(--bg);padding:10px 0 8px}
+.hints{display:flex;gap:8px;overflow-x:auto;padding-bottom:10px;scrollbar-width:none}
+.hints::-webkit-scrollbar{display:none}
+.hint{flex:none;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:8px 12px;display:flex;flex-direction:column;max-width:240px}
+.hint .it{font-size:1.05rem}
+.hru{font-size:.78rem;color:var(--muted)}
+.crow{display:flex;gap:8px}
+.crow input{flex:1;min-width:0;font:inherit;font-size:1rem;padding:13px 16px;border-radius:14px;border:2px solid var(--line);background:var(--surface);color:var(--ink)}
+.crow input:focus{outline:none;border-color:var(--sea)}
+.send{width:50px;border-radius:14px;background:var(--sea);color:var(--sea-ink);display:grid;place-items:center}
+.send svg{width:22px;height:22px}
+.cerr{color:var(--brick);font-size:.9rem;margin:0 0 8px}
+.cerr:empty{display:none}
+
+@media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<main>
+  <section class="view" id="view-course"></section>
+  <section class="view" id="view-review" hidden></section>
+  <section class="view" id="view-chat" hidden></section>
+</main>
+
+<nav class="tabs" id="tabs">
+  <div class="tabs-in">
+    <button class="tab" data-action="tab" data-tab="course" aria-current="page">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v16H6.5A2.5 2.5 0 0 0 4 21.5v-2z"/><path d="M8 7h8M8 11h6"/></svg><span data-t="tabCourse"></span></button>
+    <button class="tab" data-action="tab" data-tab="review">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2"/><path d="M7 3h12a2 2 0 0 1 2 2v12"/></svg><span data-t="tabReview"></span><span class="badge" id="badge" hidden></span></button>
+    <button class="tab" data-action="tab" data-tab="chat">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1.1-4.6A8 8 0 1 1 21 12z"/></svg><span data-t="tabChat"></span></button>
+  </div>
+</nav>
+
+<div class="toast" id="toast" role="status" hidden></div>
+<div id="settings" hidden role="dialog" aria-modal="true">
+  <div class="ltop"><button class="x" data-action="settings-close" id="settingsX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button><span class="stitle-top" data-t="settingsTitle"></span></div>
+  <div class="lbody" id="sbody"></div>
+</div>
+<div id="lesson" hidden role="dialog" aria-modal="true">
+  <div class="ltop">
+    <button class="x" data-action="lesson-close" id="lessonX"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="track"><div id="bar"></div></div>
+  </div>
+  <div class="lbody" id="lbody"></div>
+  <div class="lfoot">
+    <div class="fb" id="fb" hidden></div>
+    <button class="primary" id="lbtn"></button>
+  </div>
+</div>
+
+<script>
+const LESSONS = [
+  {id:'l1', it:'Saluti', ru:'Приветствия', en:'Greetings',
+   tip:'Ciao — для друзей и знакомых, и при встрече, и при прощании. С незнакомыми и старшими говорят Buongiorno (днём) и Buonasera (ближе к вечеру). В итальянском почти всё читается, как пишется. Буква «c» перед e и i звучит как «ч»: ciao [чао].',
+   tipEn:'Ciao is for friends and people you know, both for hello and goodbye. With strangers and older people say Buongiorno (during the day) and Buonasera (from late afternoon). Italian is read almost exactly as it is written. The letter “c” before e and i sounds like “ch”: ciao [chow].',
+   items:[
+    {it:'Ciao', pron:'ча́о', pronEn:'CHOW', ru:'Привет / Пока', en:'Hi / Bye'},
+    {it:'Buongiorno', pron:'буонджо́рно', pronEn:'bwon-JOR-no', ru:'Добрый день', en:'Good morning / Good day'},
+    {it:'Buonasera', pron:'буонасе́ра', pronEn:'bwo-na-SEH-ra', ru:'Добрый вечер', en:'Good evening'},
+    {it:'Arrivederci', pron:'арриведе́рчи', pronEn:'ar-ree-veh-DEHR-chee', ru:'До свидания', en:'Goodbye'},
+    {it:'Grazie', pron:'гра́цие', pronEn:'GRAHT-tsyeh', ru:'Спасибо', en:'Thank you'},
+    {it:'Prego', pron:'пре́го', pronEn:'PREH-go', ru:'Не за что', en:'You’re welcome'},
+    {it:'Per favore', pron:'пер фаво́рэ', pronEn:'pehr fa-VO-reh', ru:'Пожалуйста (просьба)', en:'Please'},
+    {it:'Scusi', pron:'ску́зи', pronEn:'SKOO-zee', ru:'Извините', en:'Excuse me'}]},
+  {id:'l2', it:'Presentarsi', ru:'Знакомство', en:'Introductions',
+   tip:'«ch» читается как «к»: chiami [кьями]. Местоимение «я» часто пропускают: Sono di Mosca — «(Я) из Москвы». Форма глагола и так показывает, кто говорит.',
+   tipEn:'“ch” is read as “k”: chiami [KYAH-mee]. The word for “I” is usually dropped: Sono di Mosca means “(I) am from Moscow”. The verb ending already shows who is speaking.',
+   items:[
+    {it:'Come ti chiami?', pron:'ко́мэ ти кья́ми', pronEn:'KO-meh tee KYAH-mee', ru:'Как тебя зовут?', en:'What’s your name?'},
+    {it:'Mi chiamo Marco', pron:'ми кья́мо ма́рко', pronEn:'mee KYAH-mo MAR-ko', ru:'Меня зовут Марко', en:'My name is Marco'},
+    {it:'Piacere!', pron:'пьяче́рэ', pronEn:'pya-CHEH-reh', ru:'Приятно познакомиться!', en:'Nice to meet you!'},
+    {it:'Di dove sei?', pron:'ди до́вэ сэй', pronEn:'dee DO-veh say', ru:'Откуда ты?', en:'Where are you from?'},
+    {it:'Sono di Mosca', pron:'со́но ди мо́ска', pronEn:'SO-no dee MOS-ka', ru:'Я из Москвы', en:'I’m from Moscow'},
+    {it:'Come stai?', pron:'ко́мэ стай', pronEn:'KO-meh sty', ru:'Как дела?', en:'How are you?'},
+    {it:'Sto bene, grazie', pron:'сто бэ́нэ, гра́цие', pronEn:'sto BEH-neh, GRAHT-tsyeh', ru:'У меня всё хорошо, спасибо', en:'I’m fine, thank you'},
+    {it:'E tu?', pron:'э ту', pronEn:'eh too', ru:'А ты?', en:'And you?'}]},
+  {id:'l3', it:'Al bar', ru:'В баре', en:'At the bar',
+   tip:'Vorrei — «я бы хотел(а)», вежливый способ что-то заказать. Caffè в Италии — это эспрессо. Un — артикль для мужского рода (un caffè), una — для женского (una pizza).',
+   tipEn:'Vorrei means “I would like”, the polite way to order. In Italy a caffè is an espresso. Un is the article for masculine words (un caffè), una for feminine ones (una pizza).',
+   items:[
+    {it:'Un caffè, per favore', pron:'ун каффэ́, пер фаво́рэ', pronEn:'oon kaf-FEH, pehr fa-VO-reh', ru:'Кофе, пожалуйста', en:'A coffee, please'},
+    {it:'Vorrei un cornetto', pron:'ворре́й ун корне́тто', pronEn:'vor-RAY oon kor-NET-to', ru:'Я бы хотел круассан', en:'I’d like a croissant'},
+    {it:'Un bicchiere d’acqua', pron:'ун биккье́рэ да́ккуа', pronEn:'oon beek-KYEH-reh DAHK-kwa', ru:'Стакан воды', en:'A glass of water'},
+    {it:'Il conto, per favore', pron:'иль ко́нто, пер фаво́рэ', pronEn:'eel KON-to, pehr fa-VO-reh', ru:'Счёт, пожалуйста', en:'The bill, please'},
+    {it:'Quanto costa?', pron:'куа́нто ко́ста', pronEn:'KWAN-to KOS-ta', ru:'Сколько стоит?', en:'How much is it?'},
+    {it:'Ecco', pron:'э́кко', pronEn:'EK-ko', ru:'Вот, держите', en:'Here you are'},
+    {it:'Un bicchiere di vino rosso', pron:'ун биккье́рэ ди ви́но ро́ссо', pronEn:'oon beek-KYEH-reh dee VEE-no ROS-so', ru:'Бокал красного вина', en:'A glass of red wine'},
+    {it:'Va bene', pron:'ва бэ́нэ', pronEn:'va BEH-neh', ru:'Хорошо, ладно', en:'OK, all right'}]},
+  {id:'l4', it:'I numeri', ru:'Числа от 1 до 10', en:'Numbers 1 to 10',
+   tip:'«qu» читается как «ку»: quattro [куаттро]. Двойные согласные, как в otto и sette, произносятся длиннее, это важно для понимания. Cinque звучит как [чинкуэ].',
+   tipEn:'“qu” sounds like “kw”: quattro [KWAT-tro]. Double consonants, as in otto and sette, are held longer, and that matters for being understood. Cinque sounds like [CHEEN-kweh].',
+   items:[
+    {it:'uno', pron:'у́но', pronEn:'OO-no', ru:'1', en:'1'},{it:'due', pron:'ду́э', pronEn:'DOO-eh', ru:'2', en:'2'},{it:'tre', pron:'трэ', pronEn:'treh', ru:'3', en:'3'},{it:'quattro', pron:'куа́ттро', pronEn:'KWAT-tro', ru:'4', en:'4'},{it:'cinque', pron:'чи́нкуэ', pronEn:'CHEEN-kweh', ru:'5', en:'5'},
+    {it:'sei', pron:'сэй', pronEn:'say', ru:'6', en:'6'},{it:'sette', pron:'сэ́ттэ', pronEn:'SET-teh', ru:'7', en:'7'},{it:'otto', pron:'о́тто', pronEn:'OT-to', ru:'8', en:'8'},{it:'nove', pron:'но́вэ', pronEn:'NO-veh', ru:'9', en:'9'},{it:'dieci', pron:'дье́чи', pronEn:'DYEH-chee', ru:'10', en:'10'}]},
+  {id:'l5', it:'In città', ru:'В городе', en:'In town',
+   tip:'Dov’è = dove + è, «где находится». Апостроф показывает выпавшую гласную. Il и la — определённые артикли: il bagno (мужской род), la stazione (женский).',
+   tipEn:'Dov’è = dove + è, “where is”. The apostrophe marks a dropped vowel. Il and la are the definite articles (“the”): il bagno (masculine), la stazione (feminine).',
+   items:[
+    {it:'Scusi, dov’è la stazione?', pron:'ску́зи, довэ́ ла стацьо́нэ', pronEn:'SKOO-zee, do-VEH la sta-TSYO-neh', ru:'Извините, где вокзал?', en:'Excuse me, where is the station?'},
+    {it:'a destra', pron:'а дэ́стра', pronEn:'a DEHS-tra', ru:'направо', en:'to the right'},
+    {it:'a sinistra', pron:'а сини́стра', pronEn:'a see-NEES-tra', ru:'налево', en:'to the left'},
+    {it:'sempre dritto', pron:'сэ́мпрэ дри́тто', pronEn:'SEM-preh DREET-to', ru:'всё время прямо', en:'straight ahead'},
+    {it:'È vicino?', pron:'э вичи́но', pronEn:'eh vee-CHEE-no', ru:'Это близко?', en:'Is it close?'},
+    {it:'È lontano', pron:'э лонта́но', pronEn:'eh lon-TAH-no', ru:'Это далеко', en:'It’s far'},
+    {it:'Dov’è il bagno?', pron:'довэ́ иль ба́ньо', pronEn:'do-VEH eel BAH-nyo', ru:'Где туалет?', en:'Where is the bathroom?'},
+    {it:'la fermata dell’autobus', pron:'ла фэрма́та дэлль а́утобус', pronEn:'la fehr-MAH-ta del-LOW-to-boos', ru:'автобусная остановка', en:'the bus stop'}]},
+  {id:'l6', it:'Il verbo essere', ru:'Глагол «быть»', en:'The verb “to be”',
+   tip:'Essere — главный глагол языка. В отличие от русского, его нельзя пропускать: «Я студент» = Sono studente. Обрати внимание: è с ударением значит «есть», а e без него — «и».',
+   tipEn:'Essere (“to be”) is the most important verb in Italian. The verb form already shows the person, so io, tu and the rest are often dropped: Sono stanco means “I’m tired”. Note: è with an accent means “is”, while e without one means “and”.',
+   items:[
+    {it:'io sono', pron:'и́о со́но', pronEn:'EE-o SO-no', ru:'я есть', en:'I am'},
+    {it:'tu sei', pron:'ту сэй', pronEn:'too say', ru:'ты есть', en:'you are'},
+    {it:'lui è', pron:'лу́и э', pronEn:'LOO-ee eh', ru:'он есть', en:'he is'},
+    {it:'noi siamo', pron:'ной сья́мо', pronEn:'noy SYAH-mo', ru:'мы есть', en:'we are'},
+    {it:'voi siete', pron:'вой сье́тэ', pronEn:'voy SYEH-teh', ru:'вы есть', en:'you are (plural)'},
+    {it:'loro sono', pron:'ло́ро со́но', pronEn:'LO-ro SO-no', ru:'они есть', en:'they are'},
+    {it:'Sono stanco', pron:'со́но ста́нко', pronEn:'SO-no STAN-ko', ru:'Я устал', en:'I’m tired'},
+    {it:'Siamo amici', pron:'сья́мо ами́чи', pronEn:'SYAH-mo a-MEE-chee', ru:'Мы друзья', en:'We are friends'}]}
+];
+
+const SCEN = [
+  {id:'bar', it:'Al bar', ru:'Закажи кофе и что-нибудь поесть в римском баре.', en:'Order a coffee and something to eat at a bar in Rome.',
+   role:'Ты бариста в баре в Риме. Ученик — посетитель, который заказывает напитки и еду и потом расплачивается.',
+   roleEn:'You are a barista at a bar in Rome. The learner is a customer who orders drinks and food and then pays.',
+   open:{it:'Buongiorno! Cosa prendi?', ru:'Добрый день! Что будешь?', en:'Good morning! What will you have?'},
+   hints:[{it:'Un caffè, per favore.', ru:'Кофе, пожалуйста.', en:'A coffee, please.'},{it:'Vorrei un cornetto.', ru:'Я бы хотел круассан.', en:'I’d like a croissant.'}]},
+  {id:'amico', it:'Nuovo amico', ru:'Познакомься с Джулией на вечеринке у друзей.', en:'Meet Giulia at a friends’ party.',
+   role:'Ты Джулия, 24 года, из Флоренции, дружелюбная. Ты знакомишься с учеником на вечеринке и расспрашиваешь его о нём.',
+   roleEn:'You are Giulia, 24, from Florence, friendly. You are meeting the learner at a party and asking about them.',
+   open:{it:'Ciao! Io sono Giulia. E tu, come ti chiami?', ru:'Привет! Я Джулия. А тебя как зовут?', en:'Hi! I’m Giulia. And you, what’s your name?'},
+   hints:[{it:'Ciao! Mi chiamo…', ru:'Привет! Меня зовут…', en:'Hi! My name is…'},{it:'Piacere! Sono di Mosca.', ru:'Приятно познакомиться! Я из Москвы.', en:'Nice to meet you! I’m from Moscow.'}]},
+  {id:'citta', it:'In città', ru:'Спроси у прохожего, как пройти к вокзалу.', en:'Ask a passer-by for directions to the station.',
+   role:'Ты прохожий в Милане. Ученик — турист, который спрашивает дорогу. Объясняй очень просто: a destra, a sinistra, sempre dritto.',
+   roleEn:'You are a passer-by in Milan. The learner is a tourist asking for directions. Explain very simply: a destra, a sinistra, sempre dritto.',
+   open:{it:'Sì? Posso aiutarti?', ru:'Да? Могу помочь?', en:'Yes? Can I help you?'},
+   hints:[{it:'Scusi, dov’è la stazione?', ru:'Извините, где вокзал?', en:'Excuse me, where is the station?'},{it:'È lontano?', ru:'Это далеко?', en:'Is it far?'}]},
+  {id:'libero', it:'Chiacchiere', ru:'Свободный разговор на любую тему.', en:'Free conversation on any topic.',
+   role:'Ты дружелюбный собеседник-итальянец. Поддерживай свободный разговор о повседневных вещах: еда, работа, хобби, погода.',
+   roleEn:'You are a friendly Italian conversation partner. Keep up a casual chat about everyday things: food, work, hobbies, the weather.',
+   open:{it:'Ciao! Come stai oggi?', ru:'Привет! Как ты сегодня?', en:'Hi! How are you today?'},
+   hints:[{it:'Sto bene, grazie. E tu?', ru:'Хорошо, спасибо. А ты?', en:'Fine, thanks. And you?'},{it:'Sono stanco.', ru:'Я устал.', en:'I’m tired.'}]}
+];
+
+/* ---------- interface languages ---------- */
+const T = {
+  ru: {
+    title:'Parliamo — итальянский с нуля', tabs:'Разделы', tabCourse:'Курс', tabReview:'Повторение', tabChat:'Разговор',
+    settingsTitle:'Озвучка', settingsAria:'Настройки озвучки', closeSettings:'Закрыть настройки', lessonAria:'Урок', closeLesson:'Закрыть урок',
+    langAria:'Язык интерфейса',
+    leadDone:'Все уроки пройдены. Закрепляй слова в повторении и практикуй разговор.',
+    leadFirst:'Первый урок займёт пять минут. После него ты сможешь поздороваться и поблагодарить по-итальянски.',
+    leadNext:'Следующий урок ждёт. Пара минут каждый день работает лучше, чем час раз в неделю.',
+    streak:'Дней подряд', words:'Слов и фраз', due:'К повторению',
+    lsub:(l, n) => `${l}, ${n} слов и фраз`, start:'Начать', lockedLesson:'Урок закрыт',
+    lessonN:n => `Урок ${n}`, kLearn:'Новое: послушай и повтори вслух', listen:'Послушать', listenAgain:'Послушать ещё раз',
+    kPickTr:'Выбери перевод', kPickIt:'Как сказать по-итальянски?', kListen:'Послушай и выбери, что прозвучало', kBuild:'Собери фразу',
+    next:'Дальше', check:'Проверить', right:'Верно!', correctIs:'Правильно так:',
+    lessonDone:'Урок пройден', firstTry:(a, b) => `С первой попытки: ${a} из ${b}`,
+    added:n => `${n} новых слов и фраз добавлено в повторение. Вернись к ним завтра, чтобы закрепить.`, reviewedOld:'Хорошее повторение пройденного.', finish:'Готово',
+    aiVoice:'ИИ-голос', aiVoiceNote:'Записи живых нейросетевых голосов с настоящим итальянским произношением. Звучат одинаково на любом телефоне.',
+    female:'женский, нейросетевой', male:'мужской, нейросетевой', phoneVoice:'Голос телефона', phoneVoiceMeta:'системный синтез речи',
+    chosen:', выбран', online:', через интернет', preview:'Прослушать',
+    phoneAll:'Читает все слова и фразы.', phoneChat:'Читает ответы собеседника в разговоре: их нельзя записать заранее.',
+    phoneHint:'Нажми на динамик, чтобы прослушать. Улучшенные и премиум-голоса обычно лучше.',
+    noTts:'Этот браузер не умеет озвучивать текст. Открой сайт в Safari или Chrome.', noItVoices:'Итальянских голосов на этом устройстве не найдено. Как их добавить, написано ниже.',
+    vPremium:'Премиум', vEnhanced:'Улучшенный', vStandard:'Стандартный',
+    speed:'Скорость', slow:'Медленно', speedAria:'Скорость речи', previewSpeed:'Прослушать с этой скоростью',
+    moreVoices:'Как добавить голоса получше',
+    helpIos:'<b>iPhone:</b> Настройки → Универсальный доступ → Устный контент → Голоса → Итальянский. Скачай голос с пометкой «улучшенный» или «премиум».',
+    helpAndroid:'<b>Android:</b> Настройки → Синтез речи → движок Google → установить итальянский.',
+    helpReload:'После скачивания перезагрузи страницу, и новый голос появится в списке.',
+    toastNoTts:'В этом браузере нет озвучки. Пока ориентируйся на произношение в квадратных скобках.',
+    toastNoIt:'На телефоне нет итальянского голоса, поэтому слова может читать другой голос. Итальянский голос можно скачать в настройках телефона, в разделе синтеза речи, а потом выбрать его в настройках озвучки здесь.',
+    toastSilent:'Звук не воспроизвёлся. Проверь, что телефон не на беззвучном режиме и громкость включена, и нажми ещё раз.',
+    left:n => `Осталось: ${n}`, stop:'Закончить', showTr:'Показать перевод', forgot:'Не вспомнил', know:'Помню',
+    rvDone:n => `Повторение закончено: ${n} ${n === 1 ? 'карточка' : 'карточек'}. Слова, которые ты помнишь, вернутся позже, через всё более длинные промежутки.`, ok:'Хорошо',
+    rvEmpty:'Здесь будут слова из пройденных уроков. Приложение напомнит каждое слово как раз тогда, когда ты начнёшь его забывать.', openFirst:'Открыть первый урок',
+    when:h => h <= 1 ? 'через час' : h < 24 ? `через ${h} ч` : `через ${Math.ceil(h / 24)} дн.`,
+    rvAllDone:w => `Всё повторено. Следующие слова вернутся ${w}. А пока можно пройти новый урок или поговорить с собеседником.`, practice:'Потренировать разговор',
+    rvWaiting:n => `${n === 1 ? 'слово ждёт' : 'слов ждут'} повторения. Это займёт пару минут.`, rvStart:'Начать повторение', rvLead:'Повторение слов из пройденных уроков.',
+    chatLead:'Живой разговор с ИИ. Он отвечает простыми фразами, исправляет ошибки и подсказывает, что сказать дальше.',
+    chatNoAi:'Собеседник работает, когда страница открыта в Claude: ответы используют твой аккаунт Claude. При первом сообщении появится запрос разрешения.',
+    chatAsk:'При первом сообщении Claude попросит разрешить собеседнику отвечать.',
+    back:'‹ Сценарии', placeholder:'Напиши по-итальянски…', msg:'Сообщение', send:'Отправить', tr:'Перевод', hideTr:'Скрыть перевод', better:'Как лучше сказать', typing:'пишет…',
+    errGrant:'Собеседнику не разрешено отвечать. Открой страницу заново и разреши запрос, чтобы продолжить.',
+    errRate:'Слишком много сообщений подряд. Подожди минуту и отправь снова.', errGeneric:'Ответ не пришёл. Отправь сообщение ещё раз.',
+    errNoClaude:'Собеседник работает, когда страница открыта в Claude.',
+    prompt:(role, hist) => `Ты — собеседник в приложении для изучения итальянского. Ученик — русскоязычный новичок (уровень A0–A1).
+Сценарий: ${role}
+
+Правила:
+- Отвечай по-итальянски очень простыми короткими фразами: 1–2 предложения, базовая лексика, настоящее время.
+- Оставайся в роли и продолжай разговор, обычно вопросом.
+- Если в последней реплике ученика есть ошибка (грамматика, неверное слово, порядок слов) или он написал по-русски, в поле "correction" кратко объясни по-русски, что не так, и дай правильный итальянский вариант. Пропущенные акценты и заглавные буквы ошибками не считай. Если ошибок нет — "correction": null.
+- "reply_tr" — перевод твоей реплики на русский.
+- "hints" — две короткие простые реплики, которыми ученик может ответить на твою реплику, с переводом на русский в поле "tr".
+
+Диалог:
+${hist}
+
+Верни только JSON без пояснений:
+{"correction": string или null, "reply": "...", "reply_tr": "...", "hints": [{"it": "...", "tr": "..."}, {"it": "...", "tr": "..."}]}`,
+    you:'Ученик: ', partner:'Собеседник: '
+  },
+  en: {
+    title:'Parliamo — Italian from scratch', tabs:'Sections', tabCourse:'Course', tabReview:'Review', tabChat:'Chat',
+    settingsTitle:'Voice', settingsAria:'Voice settings', closeSettings:'Close settings', lessonAria:'Lesson', closeLesson:'Close lesson',
+    langAria:'Interface language',
+    leadDone:'You’ve finished every lesson. Keep the words fresh in Review and practise in Chat.',
+    leadFirst:'The first lesson takes five minutes. After it you’ll be able to say hello and thank you in Italian.',
+    leadNext:'Your next lesson is waiting. A few minutes every day works better than an hour once a week.',
+    streak:'Day streak', words:'Words & phrases', due:'To review',
+    lsub:(l, n) => `${l}, ${n} words and phrases`, start:'Start', lockedLesson:'Lesson locked',
+    lessonN:n => `Lesson ${n}`, kLearn:'New: listen and repeat out loud', listen:'Listen', listenAgain:'Listen again',
+    kPickTr:'Pick the translation', kPickIt:'How do you say it in Italian?', kListen:'Listen and pick what you heard', kBuild:'Build the phrase',
+    next:'Continue', check:'Check', right:'Correct!', correctIs:'Correct answer:',
+    lessonDone:'Lesson complete', firstTry:(a, b) => `Right on the first try: ${a} of ${b}`,
+    added:n => `${n} new words and phrases added to Review. Come back tomorrow to lock them in.`, reviewedOld:'Nice refresher.', finish:'Done',
+    aiVoice:'AI voice', aiVoiceNote:'Recordings made with natural neural voices and real Italian pronunciation. They sound the same on every phone.',
+    female:'female, neural', male:'male, neural', phoneVoice:'Phone voice', phoneVoiceMeta:'built-in speech synthesis',
+    chosen:', selected', online:', online', preview:'Listen to',
+    phoneAll:'Reads every word and phrase.', phoneChat:'Reads the chat partner’s replies, since those can’t be recorded in advance.',
+    phoneHint:'Tap the speaker to listen. Enhanced and premium voices usually sound better.',
+    noTts:'This browser can’t read text aloud. Open the site in Safari or Chrome.', noItVoices:'No Italian voices found on this device. See below for how to add one.',
+    vPremium:'Premium', vEnhanced:'Enhanced', vStandard:'Standard',
+    speed:'Speed', slow:'Slow', speedAria:'Speech speed', previewSpeed:'Listen at this speed',
+    moreVoices:'How to add better phone voices',
+    helpIos:'<b>iPhone:</b> Settings → Accessibility → Spoken Content → Voices → Italian. Download a voice marked “Enhanced” or “Premium”.',
+    helpAndroid:'<b>Android:</b> Settings → Text-to-speech → Google engine → install Italian.',
+    helpReload:'Reload the page after downloading and the new voice will appear in the list.',
+    toastNoTts:'This browser has no speech. For now, follow the pronunciation in square brackets.',
+    toastNoIt:'This phone has no Italian voice, so another voice may read the words. You can download an Italian voice in your phone’s text-to-speech settings and then pick it here.',
+    toastSilent:'No sound played. Check that your phone isn’t on silent and the volume is up, then tap again.',
+    left:n => `Left: ${n}`, stop:'Finish', showTr:'Show translation', forgot:'Didn’t remember', know:'I knew it',
+    rvDone:n => `Review complete: ${n} ${n === 1 ? 'card' : 'cards'}. The words you remember will come back later, at longer and longer intervals.`, ok:'OK',
+    rvEmpty:'Words from finished lessons will show up here. The app brings each word back right when you’re about to forget it.', openFirst:'Open the first lesson',
+    when:h => h <= 1 ? 'in an hour' : h < 24 ? `in ${h} h` : `in ${Math.ceil(h / 24)} d`,
+    rvAllDone:w => `All caught up. The next words come back ${w}. Meanwhile, take a new lesson or chat with your partner.`, practice:'Practise a conversation',
+    rvWaiting:n => `${n === 1 ? 'word is' : 'words are'} waiting for review. It takes a couple of minutes.`, rvStart:'Start review', rvLead:'Review words from the lessons you’ve finished.',
+    chatLead:'A live conversation with AI. It replies in simple phrases, corrects your mistakes and suggests what to say next.',
+    chatNoAi:'The chat partner works when this page is opened in Claude: replies use your Claude account. You’ll be asked for permission with your first message.',
+    chatAsk:'With your first message, Claude will ask you to allow the chat partner to reply.',
+    back:'‹ Scenarios', placeholder:'Write in Italian…', msg:'Message', send:'Send', tr:'Translation', hideTr:'Hide translation', better:'A better way to say it', typing:'typing…',
+    errGrant:'The chat partner isn’t allowed to reply. Reopen the page and allow the request to continue.',
+    errRate:'Too many messages in a row. Wait a minute and send again.', errGeneric:'No reply came through. Send your message again.',
+    errNoClaude:'The chat partner works when this page is opened in Claude.',
+    prompt:(role, hist) => `You are a conversation partner in an app for learning Italian. The learner is an English-speaking beginner (level A0–A1).
+Scenario: ${role}
+
+Rules:
+- Reply in Italian with very simple, short phrases: 1–2 sentences, basic vocabulary, present tense.
+- Stay in character and keep the conversation going, usually with a question.
+- If the learner's last message has a mistake (grammar, wrong word, word order) or is written in English, use the "correction" field to briefly explain in English what is wrong and give the correct Italian version. Missing accents and capital letters are not mistakes. If there are no mistakes, "correction": null.
+- "reply_tr" is the English translation of your reply.
+- "hints" are two short, simple lines the learner could say back to you, with an English translation in "tr".
+
+Dialogue:
+${hist}
+
+Return only JSON, no explanations:
+{"correction": string or null, "reply": "...", "reply_tr": "...", "hints": [{"it": "...", "tr": "..."}, {"it": "...", "tr": "..."}]}`,
+    you:'Learner: ', partner:'Partner: '
+  }
+};
+
+const ICON_SAY = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z" fill="currentColor"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+const ICON_SEND = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const DAY = 864e5;
+const INTERVALS = [0,1,3,7,16,35];
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const norm = s => s.toLowerCase().replace(/[’']/g, "'").replace(/[.,!?¿¡…]/g, '').replace(/\s+/g, ' ').trim();
+
+/* ---------- storage ---------- */
+const KEY = 'parliamo-v1';
+let S = {done:[], cards:{}, streak:0, last:null, voice:null, rate:0.85};
+try { const raw = localStorage.getItem(KEY); if (raw) S = Object.assign(S, JSON.parse(raw)); } catch (e) {}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+
+/* Язык интерфейса: ?lang=en в ссылке, затем сохранённый выбор, затем язык браузера. */
+try { const q = new URLSearchParams(location.search).get('lang'); if (q === 'ru' || q === 'en') { S.lang = q; save(); } } catch (e) {}
+if (S.lang !== 'ru' && S.lang !== 'en') S.lang = /^ru|^uk|^be|^kk/i.test(navigator.language || '') ? 'ru' : 'en';
+const L = () => T[S.lang];
+const tr = x => (S.lang === 'en' ? x.en : x.ru) || x.ru || x.en || '';
+const ITEMS = Object.fromEntries(LESSONS.flatMap(l => l.items).map(x => [x.it, x]));
+function applyLang(){
+  document.documentElement.lang = S.lang;
+  document.title = L().title;
+  document.querySelectorAll('[data-t]').forEach(el => { el.textContent = L()[el.dataset.t]; });
+  $('#tabs').setAttribute('aria-label', L().tabs);
+  $('#settings').setAttribute('aria-label', L().settingsAria);
+  $('#settingsX').setAttribute('aria-label', L().closeSettings);
+  $('#lesson').setAttribute('aria-label', L().lessonAria);
+  $('#lessonX').setAttribute('aria-label', L().closeLesson);
+}
+function setLang(lang){
+  if (lang === S.lang) return;
+  S.lang = lang; save(); applyLang();
+  chat.s = null;
+  setTab(tab);
+}
+
+const dayKey = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+function touchStreak(){
+  const today = dayKey(new Date()), yest = dayKey(new Date(Date.now() - DAY));
+  if (S.last === today) return;
+  S.streak = S.last === yest ? S.streak + 1 : 1;
+  S.last = today; save();
+}
+function currentStreak(){
+  const today = dayKey(new Date()), yest = dayKey(new Date(Date.now() - DAY));
+  return (S.last === today || S.last === yest) ? S.streak : 0;
+}
+const dueCards = () => Object.keys(S.cards).filter(k => S.cards[k].due <= Date.now());
+
+/* ---------- speech ---------- */
+let itVoice = null;
+function voiceRank(v){
+  const n = v.name + ' ' + (v.voiceURI || '');
+  if (/premium/i.test(n)) return 3;
+  if (/enhanced|улучш|neural|natural|online/i.test(n)) return 2;
+  if (/google/i.test(n)) return 2;
+  return 1;
+}
+function voiceLabel(v){
+  const r = voiceRank(v), n = v.name + ' ' + (v.voiceURI || '');
+  if (/premium/i.test(n)) return L().vPremium;
+  if (r === 2) return L().vEnhanced;
+  return null;
+}
+function itVoices(){
+  if (!('speechSynthesis' in window)) return [];
+  return speechSynthesis.getVoices().filter(v => v.lang && v.lang.replace('_','-').toLowerCase().startsWith('it'))
+    .sort((a, b) => voiceRank(b) - voiceRank(a) || a.name.localeCompare(b.name));
+}
+function pickVoice(){
+  const vs = itVoices();
+  itVoice = (S.voice && vs.find(v => v.voiceURI === S.voice)) || vs[0] || null;
+}
+if ('speechSynthesis' in window) {
+  pickVoice();
+  speechSynthesis.onvoiceschanged = () => { pickVoice(); if (!$('#settings').hidden) renderSettings(); };
+}
+
+/* Готовые нейросетевые записи: 'фраза': имя файла в audio/<голос>/. Если запись есть, играет она, иначе голос телефона. */
+const AUDIO = {"Ciao":"a810368ec4","Buongiorno":"ce03a992c6","Buonasera":"df4722bf59","Arrivederci":"3d6ec15abd","Grazie":"b36d3dde00","Prego":"7732a2f986","Per favore":"556ce59e70","Per":"f6604e6e83","favore":"5c23dcd036","Scusi":"e44954bdda","Come ti chiami?":"32febe068f","Come":"5949d0ee4d","ti":"41c76e5218","chiami?":"9cb4ffd8c1","Mi chiamo Marco":"2f2d58b75d","Mi":"6b7439b401","chiamo":"3ebf67fcde","Marco":"bf38aa5369","Piacere!":"28964546a2","Di dove sei?":"f0d3263d44","Di":"fe564f789d","dove":"05bcd0e7ce","sei?":"f5a181acfc","Sono di Mosca":"5e823072c8","Sono":"36ce4c49ce","di":"f502e82c25","Mosca":"e94a1d3f97","Come stai?":"7d0277b3bb","stai?":"256884ffbc","Sto bene, grazie":"18de1f8c55","Sto":"39a6c7e7e5","bene,":"e8a7497019","grazie":"bd57224e34","E tu?":"095541f22c","E":"e0184adedf","tu?":"f9222a9e70","Un caffè, per favore":"7516f02f06","Un":"1844cc8a17","caffè,":"93474c4375","per":"8205aed0c4","Vorrei un cornetto":"f71fe43b74","Vorrei":"29f25a75a9","un":"dd3bc42b2c","cornetto":"92e791bf17","Un bicchiere d’acqua":"9c13bc87fd","bicchiere":"4f4b5308f6","d’acqua":"bf97149a8c","Il conto, per favore":"dfadee2b80","Il":"9e855a218f","conto,":"d8d1fb18fa","Quanto costa?":"ebea6fea9b","Quanto":"2e4324f402","costa?":"23ca9c8066","Ecco":"5ea55c537d","Un bicchiere di vino rosso":"8272e2296c","vino":"f0e4876639","rosso":"959ea3daf0","Va bene":"701a42c8b2","Va":"5f47996c3d","bene":"2376b80336","uno":"81b6f50734","due":"30cdf73eff","tre":"11aa6adc77","quattro":"973ef383d4","cinque":"af7a8d0996","sei":"5ef4186b65","sette":"6824e8afca","otto":"902287fd10","nove":"7f52fd1901","dieci":"7d6c4de44a","Scusi, dov’è la stazione?":"a238b23e50","Scusi,":"858b8ea59a","dov’è":"803dc4b19a","la":"3efd4c0fe1","stazione?":"6c8c64c2f7","a destra":"168fd9d9b3","a":"86f7e437fa","destra":"c5a1ad5b7e","a sinistra":"3b72eca895","sinistra":"1ce2596b1e","sempre dritto":"5b8041f00b","sempre":"1f4a19c28a","dritto":"8885c461dd","È vicino?":"2840769078","È":"f620eadc41","vicino?":"7fc66db2cf","È lontano":"0a47a7ff69","lontano":"2cf0c816f5","Dov’è il bagno?":"bbc5aee98e","Dov’è":"f61e093150","il":"53c1d6afa3","bagno?":"26ee3b1250","la fermata dell’autobus":"c267fecaa7","fermata":"184ced9da2","dell’autobus":"189b8056fa","io sono":"7b4bb96442","io":"5a25823018","sono":"bf2a287298","tu sei":"ad230f7a4f","tu":"a3da4c6307","lui è":"f8d2ec8349","lui":"843da8e914","è":"151666e2e2","noi siamo":"fb77f63ade","noi":"8a1de1ef72","siamo":"a91d9540cb","voi siete":"2d0e86a4bd","voi":"56c46bef6e","siete":"c0bdfc8b52","loro sono":"93c2fca92d","loro":"af715f9b7e","Sono stanco":"103d7d958e","stanco":"076cbff540","Siamo amici":"890a7102a9","Siamo":"de23dc90f1","amici":"dc1862e1b2","Buongiorno! Cosa prendi?":"7ce28f9d65","Ciao! Io sono Giulia. E tu, come ti chiami?":"d14be4990e","Sì? Posso aiutarti?":"1c57d17241","Ciao! Come stai oggi?":"ad1889d1d6","Ciao! Come stai? Io sto bene, grazie.":"38b0257557"};
+const AI_VOICES = [{id:'f', name:'Isabella', meta:'female'}, {id:'m', name:'Diego', meta:'male'}];
+if (!S.aiVoice) S.aiVoice = 'f';
+const clipUrl = (text, v) => AUDIO[text] && v && v !== 'off' ? `audio/${v}/${AUDIO[text]}.mp3` : null;
+let curAudio = null;
+function pronHtml(it){
+  const x = ITEMS[it]; if (!x) return '';
+  const p = S.lang === 'en' ? x.pronEn : x.pron;
+  return p ? `<p class="pron">[${esc(p)}]</p>` : '';
+}
+let toastT = null, warned = false;
+function toast(msg){
+  const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  clearTimeout(toastT); toastT = setTimeout(() => { t.hidden = true; }, 6000);
+}
+let speakingEl = null;
+function stopAudio(){
+  if (curAudio) { curAudio.pause(); curAudio = null; }
+  try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
+}
+function speak(text, el, byUser, aiVoice){
+  if (speakingEl) { speakingEl.classList.remove('speaking'); speakingEl = null; }
+  if (curAudio) { curAudio.pause(); curAudio = null; }
+  const clip = clipUrl(text, aiVoice || S.aiVoice);
+  if (clip) {
+    try { if ('speechSynthesis' in window) speechSynthesis.cancel(); } catch (e) {}
+    const a = new Audio(clip); curAudio = a;
+    a.playbackRate = Math.min(1.25, Math.max(0.7, (S.rate || 0.85) / 0.85));
+    if (el) { el.classList.add('speaking'); speakingEl = el; }
+    const off = () => { if (el) el.classList.remove('speaking'); if (speakingEl === el) speakingEl = null; };
+    a.onended = off;
+    a.onerror = () => { off(); if (curAudio === a) { curAudio = null; speakSystem(text, el, byUser); } };
+    a.play().catch(err => { off(); if (err && err.name !== 'AbortError' && curAudio === a) { curAudio = null; speakSystem(text, el, byUser); } });
+    return;
+  }
+  speakSystem(text, el, byUser);
+}
+function speakSystem(text, el, byUser){
+  if (!('speechSynthesis' in window)) { if (byUser) toast(L().toastNoTts); return; }
+  if (!itVoice) pickVoice();
+  if (byUser && !warned && !itVoice && speechSynthesis.getVoices().length) {
+    warned = true;
+    toast(L().toastNoIt);
+  }
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text.replace(/…/g, ''));
+    u.lang = 'it-IT'; if (itVoice) u.voice = itVoice; u.rate = S.rate || 0.85;
+    let started = false;
+    u.onstart = () => { started = true; if (el) { el.classList.add('speaking'); speakingEl = el; } };
+    u.onend = u.onerror = () => { if (el) el.classList.remove('speaking'); if (speakingEl === el) speakingEl = null; };
+    if (speechSynthesis.paused) speechSynthesis.resume();
+    speechSynthesis.speak(u);
+    if (byUser) setTimeout(() => { if (!started && !speechSynthesis.speaking) toast(L().toastSilent); }, 1800);
+  } catch (e) {}
+}
+
+/* ---------- tabs ---------- */
+let tab = 'course';
+function setTab(t){
+  tab = t;
+  ['course','review','chat'].forEach(n => { $('#view-' + n).hidden = n !== t; });
+  document.querySelectorAll('.tab').forEach(b => b.dataset.tab === t ? b.setAttribute('aria-current','page') : b.removeAttribute('aria-current'));
+  if (t === 'course') renderCourse();
+  if (t === 'review') renderReview();
+  if (t === 'chat') renderChat();
+  window.scrollTo(0, 0);
+}
+function updateBadge(){
+  const n = dueCards().length, b = $('#badge');
+  b.hidden = n === 0; b.textContent = n;
+}
+
+/* ---------- course ---------- */
+function langSwitch(){
+  return `<div class="langsw" role="group" aria-label="${L().langAria}">${['ru','en'].map(l =>
+    `<button data-action="lang" data-lang="${l}" aria-pressed="${S.lang === l}">${l.toUpperCase()}</button>`).join('')}</div>`;
+}
+function renderCourse(){
+  const done = new Set(S.done);
+  const cur = LESSONS.findIndex(l => !done.has(l.id));
+  const h = new Date().getHours();
+  const greet = h < 5 || h >= 17 ? 'Buonasera!' : 'Buongiorno!';
+  const lead = cur === -1 ? L().leadDone : cur === 0 ? L().leadFirst : L().leadNext;
+  $('#view-course').innerHTML = `
+    <header class="chome">
+      <div class="topctl">${langSwitch()}
+        <button class="gear" data-action="settings" aria-label="${L().settingsAria}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>
+      <h1 class="it greet">${greet}</h1>
+      <p class="lead">${lead}</p>
+      <dl class="stats">
+        <div><dt>${L().streak}</dt><dd>${currentStreak()}</dd></div>
+        <div><dt>${L().words}</dt><dd>${Object.keys(S.cards).length}</dd></div>
+        <div><dt>${L().due}</dt><dd>${dueCards().length}</dd></div>
+      </dl>
+    </header>
+    <ol class="path">${LESSONS.map((l, i) => {
+      const st = done.has(l.id) ? 'done' : i === cur ? 'current' : 'locked';
+      return `<li class="${st}"><button class="lrow" data-action="lesson" data-id="${l.id}" ${st === 'locked' ? `disabled aria-label="${L().lockedLesson}"` : ''}>
+        <span class="num">${st === 'done' ? '✓' : i + 1}</span>
+        <span class="ltext"><span class="it ltitle">${l.it}</span><span class="lsub">${esc(L().lsub(tr(l), l.items.length))}</span></span>
+        ${st === 'current' ? `<span class="go">${L().start}</span>` : ''}
+      </button></li>`;
+    }).join('')}</ol>`;
+  updateBadge();
+}
+
+/* ---------- lesson runner ---------- */
+let R = null;
+function startLesson(id){
+  const lesson = LESSONS.find(l => l.id === id);
+  const types = ['pick_tr','pick_it','listen','build'];
+  const ex = shuffle(lesson.items).map((item, i) => {
+    let t = types[i % 4];
+    if (t === 'build' && item.it.trim().split(/\s+/).length < 2) t = 'pick_it';
+    return {type:t, item};
+  });
+  R = {lesson, steps:[{type:'tip'}, ...lesson.items.map(item => ({type:'learn', item})), ...ex], i:0, first:0, total:ex.length, sel:null, built:[], toks:[], mode:'next'};
+  $('#lesson').hidden = false; document.body.classList.add('locked');
+  showStep();
+}
+function closeLesson(){
+  R = null; $('#lesson').hidden = true; document.body.classList.remove('locked');
+  stopAudio();
+  renderCourse();
+}
+function options(item, get){
+  const pool = shuffle(R.lesson.items.filter(x => x !== item).map(get));
+  const extra = shuffle(LESSONS.flatMap(l => l.items).filter(x => x !== item).map(get));
+  const set = [];
+  for (const v of [...pool, ...extra]) { if (v !== get(item) && !set.includes(v)) set.push(v); if (set.length === 3) break; }
+  return shuffle([get(item), ...set]);
+}
+function setBtn(text, mode, disabled){ const b = $('#lbtn'); b.textContent = text; b.disabled = !!disabled; R.mode = mode; }
+function showStep(){
+  const st = R.steps[R.i], item = st.item, body = $('#lbody');
+  R.sel = null; R.built = [];
+  $('#bar').style.width = (R.i / R.steps.length * 100) + '%';
+  $('#fb').hidden = true;
+  let html = '';
+  if (st.type === 'tip') {
+    const n = LESSONS.indexOf(R.lesson) + 1;
+    html = `<p class="kicker">${L().lessonN(n)}</p><h2 class="it big">${R.lesson.it}</h2><p class="ru-sub">${esc(tr(R.lesson))}</p><div class="tip">${esc(S.lang === 'en' ? R.lesson.tipEn : R.lesson.tip)}</div>`;
+    setBtn(L().start, 'next');
+  } else if (st.type === 'learn') {
+    html = `<p class="kicker">${L().kLearn}</p><button class="say big-say" data-say="${esc(item.it)}" aria-label="${L().listen}">${ICON_SAY}</button><h2 class="it word"><span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></h2>${pronHtml(item.it)}<p class="trans">${esc(tr(item))}</p>`;
+    setBtn(L().next, 'next'); speak(item.it);
+  } else if (st.type === 'pick_tr') {
+    html = `<p class="kicker">${L().kPickTr}</p><div class="prompt"><button class="say" data-say="${esc(item.it)}" aria-label="${L().listen}">${ICON_SAY}</button><span class="it pword tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></div>
+      <div class="opts">${options(item, tr).map(v => `<button class="opt" data-action="opt" data-val="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}</div>`;
+    setBtn(L().check, 'check', true); speak(item.it);
+  } else if (st.type === 'pick_it' || st.type === 'listen') {
+    const head = st.type === 'pick_it'
+      ? `<p class="kicker">${L().kPickIt}</p><p class="pru">${esc(tr(item))}</p>`
+      : `<p class="kicker">${L().kListen}</p><div class="prompt"><button class="say big-say" data-say="${esc(item.it)}" aria-label="${L().listenAgain}">${ICON_SAY}</button></div>`;
+    html = head + `<div class="opts">${options(item, x => x.it).map(v => `<button class="opt it" data-action="opt" data-val="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}</div>`;
+    setBtn(L().check, 'check', true);
+    if (st.type === 'listen') setTimeout(() => speak(item.it), 250);
+  } else if (st.type === 'build') {
+    const words = item.it.split(/\s+/);
+    const others = shuffle(LESSONS.flatMap(l => l.items).filter(x => x !== item).flatMap(x => x.it.split(/\s+/)))
+      .filter(w => !words.map(norm).includes(norm(w)));
+    const extra = [...new Set(others)].slice(0, 2);
+    R.toks = shuffle([...words, ...extra]).map((t, id) => ({id, t}));
+    html = `<p class="kicker">${L().kBuild}</p><p class="pru">${esc(tr(item))}</p><div class="answer" id="ans"></div><div class="bank" id="bank"></div>`;
+    setBtn(L().check, 'check', true);
+  }
+  body.innerHTML = html; body.scrollTop = 0;
+  if (st.type === 'build') renderBuild();
+}
+function renderBuild(){
+  $('#ans').innerHTML = R.built.map(id => `<button class="tok it" data-action="unpick" data-id="${id}">${esc(R.toks[id].t)}</button>`).join('');
+  $('#bank').innerHTML = R.toks.map(tk => `<button class="tok it ${R.built.includes(tk.id) ? 'ghost' : ''}" data-action="pick" data-id="${tk.id}" ${R.built.includes(tk.id) ? 'tabindex="-1" aria-hidden="true"' : ''}>${esc(tk.t)}</button>`).join('');
+  if (R.mode === 'check') $('#lbtn').disabled = R.built.length === 0;
+}
+function check(){
+  const st = R.steps[R.i], item = st.item;
+  let ok, correct;
+  if (st.type === 'build') {
+    ok = norm(R.built.map(id => R.toks[id].t).join(' ')) === norm(item.it);
+    correct = item.it;
+    document.querySelectorAll('.tok').forEach(b => b.disabled = true);
+  } else {
+    correct = st.type === 'pick_tr' ? tr(item) : item.it;
+    ok = R.sel === correct;
+    document.querySelectorAll('.opt').forEach(b => {
+      b.disabled = true;
+      if (b.dataset.val === correct) b.classList.add('right');
+      else if (b.dataset.val === R.sel) b.classList.add('wrong');
+    });
+  }
+  const fb = $('#fb');
+  fb.hidden = false;
+  if (ok) {
+    if (!st.retry) R.first++;
+    fb.className = 'fb ok';
+    fb.innerHTML = `${L().right}<span class="it"><span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></span>${pronHtml(item.it)}`;
+  } else {
+    fb.className = 'fb bad';
+    fb.innerHTML = `${L().correctIs}<span class="it">${correct === item.it ? `<span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(correct)}</span>` : esc(correct)}</span>${pronHtml(item.it)}`;
+    if (!st.retry) R.steps.push({...st, retry:true});
+  }
+  speak(item.it);
+  setBtn(L().next, 'next');
+}
+function next(){
+  R.i++;
+  if (R.i >= R.steps.length) return finish();
+  showStep();
+}
+function finish(){
+  const l = R.lesson;
+  if (!S.done.includes(l.id)) S.done.push(l.id);
+  let added = 0;
+  l.items.forEach(x => { if (!S.cards[x.it]) { S.cards[x.it] = {ru:x.ru, box:0, due:Date.now()}; added++; } });
+  touchStreak(); save();
+  $('#bar').style.width = '100%';
+  $('#fb').hidden = true;
+  $('#lbody').innerHTML = `<p class="kicker">${L().lessonDone}</p><h2 class="it big">Bravo!</h2>
+    <p class="result">${L().firstTry(R.first, R.total)}</p>
+    <p>${added ? L().added(added) : L().reviewedOld}</p>`;
+  setBtn(L().finish, 'close');
+}
+$('#lbtn').addEventListener('click', () => {
+  if (!R) return;
+  if (R.mode === 'check') check();
+  else if (R.mode === 'next') next();
+  else closeLesson();
+});
+
+/* ---------- settings ---------- */
+const SAMPLE = 'Ciao! Come stai? Io sto bene, grazie.';
+function openSettings(){ $('#settings').hidden = false; document.body.classList.add('locked'); renderSettings(); }
+function closeSettings(){ $('#settings').hidden = true; if (!R) document.body.classList.remove('locked'); }
+function renderSettings(){
+  const vs = itVoices();
+  const supported = 'speechSynthesis' in window;
+  const list = !supported
+    ? `<p class="muted">${L().noTts}</p>`
+    : !vs.length
+      ? `<p class="muted">${L().noItVoices}</p>`
+      : `<div class="vlist" role="radiogroup" aria-label="${L().phoneVoice}">${vs.map(v => {
+          const on = itVoice && v.voiceURI === itVoice.voiceURI, lbl = voiceLabel(v);
+          return `<div class="vrow" role="radio" aria-checked="${on}">
+            <button class="vpick" data-action="set-voice" data-uri="${esc(v.voiceURI)}"><span class="vname">${esc(v.name)}</span><span class="vmeta">${lbl ? `<b>${lbl}</b>` : L().vStandard}${v.localService === false ? L().online : ''}${on ? L().chosen : ''}</span></button>
+            <button class="say sm" data-action="preview" data-uri="${esc(v.voiceURI)}" aria-label="${L().preview} ${esc(v.name)}">${ICON_SAY}</button>
+          </div>`; }).join('')}</div>`;
+  const aiOpts = [...AI_VOICES.map(v => ({...v, meta:L()[v.meta]})), {id:'off', name:L().phoneVoice, meta:L().phoneVoiceMeta}];
+  const aiList = `<div class="vlist" role="radiogroup" aria-label="${L().aiVoice}">${aiOpts.map(v => {
+      const on = S.aiVoice === v.id;
+      return `<div class="vrow" role="radio" aria-checked="${on}">
+        <button class="vpick" data-action="set-ai" data-ai="${v.id}"><span class="vname">${esc(v.name)}</span><span class="vmeta">${v.id === 'off' ? v.meta : `<b>${v.meta}</b>`}${on ? L().chosen : ''}</span></button>
+        <button class="say sm" data-action="preview-ai" data-ai="${v.id}" aria-label="${L().preview} ${esc(v.name)}">${ICON_SAY}</button>
+      </div>`; }).join('')}</div>`;
+  $('#sbody').innerHTML = `
+    <p class="h3">${L().aiVoice}</p>
+    <p class="muted">${L().aiVoiceNote}</p>
+    ${aiList}
+    <p class="h3">${L().phoneVoice}</p>
+    <p class="muted">${S.aiVoice === 'off' ? L().phoneAll : L().phoneChat} ${L().phoneHint}</p>
+    ${list}
+    <p class="h3">${L().speed}</p>
+    <div class="rate"><span class="muted">${L().slow}</span><input type="range" id="rate" min="0.6" max="1.1" step="0.05" value="${S.rate || 0.85}" aria-label="${L().speedAria}"><output id="rateOut">${Math.round((S.rate || 0.85) * 100)}%</output></div>
+    <button class="secondary" data-action="preview" style="width:100%;margin-bottom:26px">${L().previewSpeed}</button>
+    <p class="h3">${L().moreVoices}</p>
+    <div class="help">
+      <p>${L().helpIos}</p>
+      <p>${L().helpAndroid}</p>
+      <p>${L().helpReload}</p>
+    </div>`;
+  $('#rate').addEventListener('input', e => {
+    S.rate = +e.target.value; $('#rateOut').textContent = Math.round(S.rate * 100) + '%'; save();
+  });
+}
+function previewVoice(uri, el){
+  if (!uri && S.aiVoice !== 'off') { speak(SAMPLE, el, true); return; }
+  if (!('speechSynthesis' in window)) return;
+  const v = uri ? itVoices().find(x => x.voiceURI === uri) : itVoice;
+  if (!v) { speakSystem(SAMPLE, el, true); return; }
+  const keep = itVoice; itVoice = v; speakSystem(SAMPLE, el, true); itVoice = keep;
+}
+
+/* ---------- review ---------- */
+let RV = null;
+const cardTr = k => ITEMS[k] ? tr(ITEMS[k]) : S.cards[k].ru;
+function renderReview(){
+  const v = $('#view-review');
+  updateBadge();
+  if (RV && RV.queue.length) {
+    const k = RV.queue[0];
+    v.innerHTML = `<div class="rv-top"><span>${L().left(RV.queue.length)}</span><button class="link" data-action="rv-stop">${L().stop}</button></div>
+      <div class="flash"><button class="say big-say" data-say="${esc(k)}" aria-label="${L().listen}">${ICON_SAY}</button>
+        <p class="it word"><span class="tap" role="button" tabindex="0" data-say="${esc(k)}">${esc(k)}</span></p>${pronHtml(k)}${RV.shown ? `<p class="trans">${esc(cardTr(k))}</p>` : ''}</div>
+      ${RV.shown
+        ? `<div class="two"><button class="secondary" data-action="rv-forget">${L().forgot}</button><button class="primary" data-action="rv-know">${L().know}</button></div>`
+        : `<button class="primary" data-action="rv-show">${L().showTr}</button>`}`;
+    return;
+  }
+  if (RV && RV.count) {
+    v.innerHTML = `<div class="rv-head"><h1 class="it">Ottimo!</h1></div><div class="empty"><p>${L().rvDone(RV.count)}</p><button class="primary" data-action="rv-done">${L().ok}</button></div>`;
+    return;
+  }
+  const total = Object.keys(S.cards).length, due = dueCards();
+  let inner;
+  if (!total) {
+    inner = `<div class="empty"><p>${L().rvEmpty}</p><button class="primary" data-action="tab" data-tab="course">${L().openFirst}</button></div>`;
+  } else if (!due.length) {
+    const nxt = Math.min(...Object.values(S.cards).map(c => c.due));
+    const hrs = Math.ceil((nxt - Date.now()) / 36e5);
+    inner = `<div class="empty"><p>${L().rvAllDone(L().when(hrs))}</p><button class="secondary" data-action="tab" data-tab="chat" style="width:100%">${L().practice}</button></div>`;
+  } else {
+    inner = `<p class="bignum">${due.length}</p><p class="lead" style="margin-bottom:24px">${L().rvWaiting(due.length)}</p><button class="primary" data-action="rv-start">${L().rvStart}</button>`;
+  }
+  v.innerHTML = `<div class="rv-head"><h1 class="it">Ripasso</h1><p class="lead">${L().rvLead}</p></div>${inner}`;
+}
+
+/* ---------- chat ---------- */
+let samplerP = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('sample').catch(() => null) : Promise.resolve(null);
+let aiAvailable = null;
+samplerP.then(s => { aiAvailable = !!s; if (tab === 'chat' && !chat.s) renderChat(); });
+const chat = {s:null, msgs:[], hints:[], busy:false, err:''};
+
+function renderChat(){
+  const v = $('#view-chat');
+  if (!chat.s) {
+    const note = `<p class="notice">${aiAvailable === false ? L().chatNoAi : L().chatAsk}</p>`;
+    v.innerHTML = `<header class="chead"><h1 class="it">Parliamo!</h1><p class="lead">${L().chatLead}</p></header>
+      <div class="scen">${SCEN.map(s => `<button class="scard" data-action="scen" data-id="${s.id}"><span class="it stitle">${s.it}</span><span class="sdesc">${esc(tr(s))}</span></button>`).join('')}</div>${note}`;
+    return;
+  }
+  v.innerHTML = `<div class="chatbar"><button class="link" data-action="scen-back">${L().back}</button><span class="it">${chat.s.it}</span></div>
+    <div class="msgs" id="msgs"></div>
+    <div class="composer"><p class="cerr" id="cerr"></p><div class="hints" id="hints"></div>
+      <div class="crow"><input id="cin" type="text" placeholder="${L().placeholder}" autocomplete="off" autocapitalize="sentences" lang="it" aria-label="${L().msg}"><button class="send" data-action="send" aria-label="${L().send}">${ICON_SEND}</button></div></div>`;
+  $('#cin').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); send(); } });
+  updateChat();
+}
+function updateChat(scroll){
+  const m = $('#msgs'); if (!m) return;
+  m.innerHTML = chat.msgs.map((x, i) => x.who === 'ai'
+    ? `<div class="msg ai"><p class="it"><span class="tap" role="button" tabindex="0" data-say="${esc(x.it)}">${esc(x.it)}</span></p><div class="mtools"><button class="say sm" data-say="${esc(x.it)}" aria-label="${L().listen}">${ICON_SAY}</button>${x.tr ? `<button class="link" data-action="tr" data-i="${i}">${x.showTr ? L().hideTr : L().tr}</button>` : ''}</div>${x.showTr ? `<p class="mru">${esc(x.tr)}</p>` : ''}</div>`
+    : `<div class="msg me"><p class="it">${esc(x.it)}</p></div>${x.corr ? `<div class="corr"><strong>${L().better}</strong>${esc(x.corr)}</div>` : ''}`
+  ).join('') + (chat.busy ? `<div class="typing">${L().typing}</div>` : '');
+  $('#hints').innerHTML = chat.busy ? '' : chat.hints.map(h => `<button class="hint" data-action="hint" data-it="${esc(h.it)}"><span class="it">${esc(h.it)}</span><span class="hru">${esc(h.tr || '')}</span></button>`).join('');
+  $('#cerr').textContent = chat.err;
+  if (scroll !== false) requestAnimationFrame(() => window.scrollTo({top:document.body.scrollHeight}));
+}
+function openScenario(id){
+  const s = SCEN.find(x => x.id === id);
+  chat.s = s; chat.err = ''; chat.busy = false;
+  chat.msgs = [{who:'ai', it:s.open.it, tr:tr(s.open)}];
+  chat.hints = s.hints.map(h => ({it:h.it, tr:tr(h)}));
+  renderChat(); speak(s.open.it);
+}
+function buildPrompt(){
+  const hist = chat.msgs.slice(-14).map(m => (m.who === 'ai' ? L().partner : L().you) + m.it).join('\n');
+  return L().prompt(S.lang === 'en' ? chat.s.roleEn : chat.s.role, hist);
+}
+function errText(code){
+  if (code === 'not_granted') return L().errGrant;
+  if (code === 'rate_limited') return L().errRate;
+  if (code === 'cancelled') return '';
+  return L().errGeneric;
+}
+async function send(){
+  const inp = $('#cin'); if (!inp || chat.busy) return;
+  const text = inp.value.trim(); if (!text) return;
+  const sample = await samplerP;
+  if (!sample) { chat.err = L().errNoClaude; updateChat(false); return; }
+  inp.value = ''; chat.err = '';
+  const mine = {who:'me', it:text};
+  chat.msgs.push(mine); chat.hints = []; chat.busy = true; updateChat();
+  try {
+    const res = await sample.json(buildPrompt(), {modelTier:'quick', cache:false});
+    if (!res || typeof res.reply !== 'string') throw {code:'bad_response'};
+    if (res.correction) mine.corr = String(res.correction);
+    chat.msgs.push({who:'ai', it:res.reply, tr:res.reply_tr || ''});
+    chat.hints = Array.isArray(res.hints) ? res.hints.filter(h => h && h.it).slice(0, 3) : [];
+    touchStreak();
+  } catch (e) {
+    chat.err = errText(e && e.code);
+  } finally {
+    chat.busy = false; updateChat();
+  }
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click', e => {
+  const sayB = e.target.closest('[data-say]');
+  if (sayB) { speak(sayB.dataset.say, sayB, true); return; }
+  const b = e.target.closest('[data-action]');
+  if (!b || b.disabled) return;
+  const a = b.dataset.action;
+  if (a === 'tab') setTab(b.dataset.tab);
+  else if (a === 'lang') setLang(b.dataset.lang);
+  else if (a === 'lesson') startLesson(b.dataset.id);
+  else if (a === 'lesson-close') closeLesson();
+  else if (a === 'settings') openSettings();
+  else if (a === 'settings-close') closeSettings();
+  else if (a === 'set-voice') { S.voice = b.dataset.uri; save(); pickVoice(); renderSettings(); previewVoice(b.dataset.uri, null); }
+  else if (a === 'preview') previewVoice(b.dataset.uri, b);
+  else if (a === 'set-ai') { S.aiVoice = b.dataset.ai; save(); renderSettings(); previewVoice(null, null); }
+  else if (a === 'preview-ai') { b.dataset.ai === 'off' ? speakSystem(SAMPLE, b, true) : speak(SAMPLE, b, true, b.dataset.ai); }
+  else if (a === 'opt' && R && R.mode === 'check') {
+    R.sel = b.dataset.val;
+    document.querySelectorAll('.opt').forEach(o => o.setAttribute('aria-pressed', o === b ? 'true' : 'false'));
+    $('#lbtn').disabled = false;
+    if (b.classList.contains('it')) speak(b.dataset.val);
+  }
+  else if (a === 'pick' && R && R.mode === 'check') { const id = +b.dataset.id; if (!R.built.includes(id)) { R.built.push(id); speak(R.toks[id].t); renderBuild(); } }
+  else if (a === 'unpick' && R && R.mode === 'check') { R.built = R.built.filter(x => x !== +b.dataset.id); renderBuild(); }
+  else if (a === 'rv-start') { RV = {queue:shuffle(dueCards()), shown:false, count:0}; renderReview(); }
+  else if (a === 'rv-show') { RV.shown = true; speak(RV.queue[0]); renderReview(); }
+  else if (a === 'rv-know' || a === 'rv-forget') {
+    const k = RV.queue.shift(), c = S.cards[k];
+    if (a === 'rv-know') { c.box = Math.min(c.box + 1, INTERVALS.length - 1); c.due = Date.now() + INTERVALS[c.box] * DAY; }
+    else { c.box = 0; c.due = Date.now(); RV.queue.push(k); }
+    RV.count++; RV.shown = false; touchStreak(); save(); renderReview();
+  }
+  else if (a === 'rv-stop' || a === 'rv-done') { RV = a === 'rv-stop' && RV && RV.count ? {queue:[], count:RV.count} : null; renderReview(); }
+  else if (a === 'scen') openScenario(b.dataset.id);
+  else if (a === 'scen-back') { chat.s = null; renderChat(); window.scrollTo(0, 0); }
+  else if (a === 'send') send();
+  else if (a === 'hint') { const i = $('#cin'); i.value = b.dataset.it.replace(/…$/, ' '); i.focus(); }
+  else if (a === 'tr') { const m = chat.msgs[+b.dataset.i]; m.showTr = !m.showTr; updateChat(false); }
+});
+
+document.addEventListener('keydown', e => {
+  const el = e.target.closest && e.target.closest('.tap[data-say]');
+  if (el && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); speak(el.dataset.say, el, true); }
+});
+applyLang();
+renderCourse();
+</script>
+</body>
+</html>
