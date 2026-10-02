@@ -4,6 +4,12 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Parliamo — итальянский с нуля</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-180.png">
+<meta name="theme-color" content="#1E5A7A">
+<meta name="apple-mobile-web-app-title" content="Parliamo">
+<meta name="description" content="Italian for beginners: short lessons, spaced review and AI voices. Интерфейс на русском и английском.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400..700;1,6..96,400..700&family=Onest:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -12,6 +18,7 @@
   --bg:#EDF2F4; --surface:#FFFFFF; --ink:#14202B; --muted:#5B6873; --line:#D3DCE1;
   --sea:#1E5A7A; --sea-ink:#FFFFFF; --lemon:#F2C230; --lemon-soft:#FBF0C6;
   --olive:#3F7A35; --ok-bg:#E3F0DD; --brick:#B5452C; --bad-bg:#F8E1DA;
+  --sky:#D5E6EE; --hill:#B9CFA8; --cliff:#D8C3A0; --house1:#F4D9A6; --house2:#E9A38A; --house3:#FBF3E4; --sea2:#2C6F93; --pic-bg:#FBF0C6;
   --tabh:64px;
   box-sizing:border-box;
   padding-top:env(safe-area-inset-top,0px);
@@ -22,12 +29,14 @@
     --bg:#0E1920; --surface:#16252F; --ink:#E7EEF1; --muted:#94A4AF; --line:#25394A;
     --sea:#6FB3D6; --sea-ink:#0E1920; --lemon:#F2C230; --lemon-soft:#3A3417;
     --olive:#8DC273; --ok-bg:#1D3320; --brick:#E8826A; --bad-bg:#3B201A;
+    --sky:#132532; --hill:#25402F; --cliff:#4A3E2C; --house1:#8C7140; --house2:#8A4B3A; --house3:#A89C88; --sea2:#3D86AE; --pic-bg:#26332F; color-scheme:dark;
   }
 }
 :root[data-theme="dark"]{
   --bg:#0E1920; --surface:#16252F; --ink:#E7EEF1; --muted:#94A4AF; --line:#25394A;
   --sea:#6FB3D6; --sea-ink:#0E1920; --lemon:#F2C230; --lemon-soft:#3A3417;
   --olive:#8DC273; --ok-bg:#1D3320; --brick:#E8826A; --bad-bg:#3B201A;
+  --sky:#132532; --hill:#25402F; --cliff:#4A3E2C; --house1:#8C7140; --house2:#8A4B3A; --house3:#A89C88; --sea2:#3D86AE; --pic-bg:#26332F; color-scheme:dark;
 }
 *,*::before,*::after{box-sizing:inherit}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
@@ -196,6 +205,49 @@ main{max-width:560px;margin:0 auto;padding:20px 20px calc(var(--tabh) + 32px)}
 .cerr{color:var(--brick);font-size:.9rem;margin:0 0 8px}
 .cerr:empty{display:none}
 
+/* Visuals */
+.postcard{display:block;width:100%;height:auto;aspect-ratio:400/120;max-width:100%;border-radius:18px;margin:20px 0 4px}
+.pc-sky{fill:var(--sky)}.pc-sun{fill:var(--lemon)}.pc-hill{fill:var(--hill)}.pc-cliff{fill:var(--cliff)}
+.pc-houses .h1{fill:var(--house1)}.pc-houses .h2{fill:var(--house2)}.pc-houses .h3,.pc-houses .h4{fill:var(--house3)}
+.pc-win rect{fill:var(--sea)}
+.pc-sea{fill:var(--sea)}.pc-sea2{fill:var(--sea2)}
+.pc-boat path{fill:var(--brick)}.pc-boat .sail{fill:var(--house3)}
+@media (prefers-reduced-motion: no-preference){
+  .pc-boat{animation:bob 4s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+  .pc-sea2{animation:drift 6s ease-in-out infinite}
+}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-2px) rotate(2deg)}}
+@keyframes drift{0%,100%{transform:translateX(0)}50%{transform:translateX(-12px)}}
+.week{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:-12px 0 18px;flex-wrap:wrap}
+.wlbl{font-size:.8rem;color:var(--muted)}
+.wdays{display:flex;gap:6px}
+.wd{display:flex;flex-direction:column;align-items:center;gap:3px;font-size:.68rem;color:var(--muted);letter-spacing:.02em}
+.wd i{width:26px;height:26px;border-radius:50%;border:2px solid var(--line);display:grid;place-items:center;font-style:normal;font-size:.75rem;font-weight:700;color:var(--surface)}
+.wd.on i{background:var(--olive);border-color:var(--olive)}
+.wd.today i{border-color:var(--sea)}
+.wd.today{color:var(--ink);font-weight:600}
+.wd.future i{border-style:dashed}
+.cprog{margin:0 0 28px}
+.cprog-top{display:flex;justify-content:space-between;font-size:.85rem;color:var(--muted);margin-bottom:6px;font-variant-numeric:tabular-nums}
+.cprog .track>div{height:100%;background:var(--olive);border-radius:5px;transition:width .4s ease}
+.emb{flex:none;width:40px;height:40px;border-radius:12px;background:var(--surface);display:grid;place-items:center;font-size:1.3rem}
+.locked .emb{opacity:.6;filter:grayscale(1)}
+.emblem{width:84px;height:84px;border-radius:24px;background:var(--pic-bg);display:grid;place-items:center;font-size:2.8rem;margin:10px 0 6px}
+.pic{flex:none;display:inline-grid;place-items:center;width:56px;height:56px;border-radius:16px;background:var(--pic-bg);font-size:1.9rem;line-height:1}
+.pic.lg{width:96px;height:96px;border-radius:26px;font-size:3.2rem}
+.pic.digit{font-family:'Bodoni Moda',Georgia,serif;font-style:italic;font-weight:600;color:var(--sea);font-size:2rem}
+.pic.lg.digit{font-size:3.4rem}
+.pic.swatch{background:var(--sw);box-shadow:inset 0 0 0 2px var(--line)}
+.learnrow{display:flex;align-items:center;gap:16px}
+.prow{display:flex;align-items:center;gap:14px;margin:0 0 24px}
+.prow .pru{margin:0}
+.flash .pic.lg{margin-bottom:14px}
+.sfxrow{display:flex;align-items:center;justify-content:space-between;gap:16px;background:var(--surface);border-radius:14px;padding:12px 16px;margin:0 0 26px;cursor:pointer}
+.sfxrow>span{display:flex;flex-direction:column;min-width:0}
+.sfxrow .h3{margin:0}
+.sfxrow input{width:22px;height:22px;accent-color:var(--sea);flex:none}
+.confetti{position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:30}
+
 @media (prefers-reduced-motion: reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
@@ -301,8 +353,45 @@ const LESSONS = [
     {it:'voi siete', pron:'вой сье́тэ', pronEn:'voy SYEH-teh', ru:'вы есть', en:'you are (plural)'},
     {it:'loro sono', pron:'ло́ро со́но', pronEn:'LO-ro SO-no', ru:'они есть', en:'they are'},
     {it:'Sono stanco', pron:'со́но ста́нко', pronEn:'SO-no STAN-ko', ru:'Я устал', en:'I’m tired'},
-    {it:'Siamo amici', pron:'сья́мо ами́чи', pronEn:'SYAH-mo a-MEE-chee', ru:'Мы друзья', en:'We are friends'}]}
+    {it:'Siamo amici', pron:'сья́мо ами́чи', pronEn:'SYAH-mo a-MEE-chee', ru:'Мы друзья', en:'We are friends'}]},
+  {id:'l7', it:'Il cibo', ru:'Еда', en:'Food',
+   tip:'Il и la — артикли мужского и женского рода: il gelato, la pizza. Слова на -o обычно мужского рода, на -a — женского. В Ho fame буква h не читается: [о фамэ]. Дословно это «у меня голод».',
+   tipEn:'Il and la are the articles for masculine and feminine nouns: il gelato, la pizza. Nouns ending in -o are usually masculine, those in -a feminine. The h in Ho fame is silent: [o FAH-meh]. Literally it means “I have hunger”.',
+   items:[
+    {it:'la pizza', pron:'ла пи́цца', pronEn:'la PEET-tsa', ru:'пицца', en:'pizza'},
+    {it:'la pasta', pron:'ла па́ста', pronEn:'la PAHS-ta', ru:'паста', en:'pasta'},
+    {it:'il gelato', pron:'иль джела́то', pronEn:'eel jeh-LAH-to', ru:'мороженое', en:'ice cream'},
+    {it:'il pane', pron:'иль па́нэ', pronEn:'eel PAH-neh', ru:'хлеб', en:'bread'},
+    {it:'il formaggio', pron:'иль форма́джо', pronEn:'eel for-MAJ-jo', ru:'сыр', en:'cheese'},
+    {it:'la frutta', pron:'ла фру́тта', pronEn:'la FROOT-ta', ru:'фрукты', en:'fruit'},
+    {it:'Ho fame', pron:'о фа́мэ', pronEn:'o FAH-meh', ru:'Я голоден', en:'I’m hungry'},
+    {it:'È buonissimo!', pron:'э буони́ссимо', pronEn:'eh bwo-NEES-see-mo', ru:'Очень вкусно!', en:'It’s delicious!'}]},
+  {id:'l8', it:'I colori', ru:'Цвета', en:'Colours',
+   tip:'Цвета — это прилагательные, и обычно они стоят после слова: vino rosso — красное вино. «gi» читается как «дж»: giallo [джалло]. Blu никогда не меняет окончание.',
+   tipEn:'Colours are adjectives and usually come after the noun: vino rosso means red wine. “gi” sounds like “j”: giallo [JAL-lo]. Blu never changes its ending.',
+   items:[
+    {it:'rosso', pron:'ро́ссо', pronEn:'ROS-so', ru:'красный', en:'red'},
+    {it:'verde', pron:'вэ́рдэ', pronEn:'VEHR-deh', ru:'зелёный', en:'green'},
+    {it:'bianco', pron:'бья́нко', pronEn:'BYAN-ko', ru:'белый', en:'white'},
+    {it:'nero', pron:'нэ́ро', pronEn:'NEH-ro', ru:'чёрный', en:'black'},
+    {it:'giallo', pron:'джа́лло', pronEn:'JAL-lo', ru:'жёлтый', en:'yellow'},
+    {it:'blu', pron:'блу', pronEn:'bloo', ru:'синий', en:'blue'},
+    {it:'arancione', pron:'аранчо́нэ', pronEn:'a-ran-CHO-neh', ru:'оранжевый', en:'orange'},
+    {it:'Il mio colore preferito è il blu', pron:'иль ми́о коло́рэ прэфэри́то э иль блу', pronEn:'eel MEE-o ko-LO-reh preh-feh-REE-to eh eel bloo', ru:'Мой любимый цвет — синий', en:'My favourite colour is blue'}]}
 ];
+
+/* Картинки к словам: эмодзи или образец цвета. */
+const PIC = {
+  'Ciao':'👋','Buongiorno':'☀️','Buonasera':'🌆','Arrivederci':'🚶','Grazie':'🙏','Prego':'😊','Per favore':'🤲','Scusi':'🙇',
+  'Come ti chiami?':'🤔','Mi chiamo Marco':'🙋‍♂️','Piacere!':'🤝','Di dove sei?':'🌍','Sono di Mosca':'🏙️','Come stai?':'💬','Sto bene, grazie':'👍','E tu?':'👉',
+  'Un caffè, per favore':'☕','Vorrei un cornetto':'🥐','Un bicchiere d’acqua':'💧','Il conto, per favore':'🧾','Quanto costa?':'💶','Ecco':'🫴','Un bicchiere di vino rosso':'🍷','Va bene':'👌',
+  'uno':'1','due':'2','tre':'3','quattro':'4','cinque':'5','sei':'6','sette':'7','otto':'8','nove':'9','dieci':'10',
+  'Scusi, dov’è la stazione?':'🚉','a destra':'➡️','a sinistra':'⬅️','sempre dritto':'⬆️','È vicino?':'📍','È lontano':'🗺️','Dov’è il bagno?':'🚻','la fermata dell’autobus':'🚏',
+  'io sono':'🙋','tu sei':'🫵','lui è':'👨','noi siamo':'👫','voi siete':'👥','loro sono':'👨‍👩‍👧','Sono stanco':'😴','Siamo amici':'🫶',
+  'la pizza':'🍕','la pasta':'🍝','il gelato':'🍨','il pane':'🍞','il formaggio':'🧀','la frutta':'🍎','Ho fame':'😋','È buonissimo!':'🤌'
+};
+const SWATCH = {'rosso':'#C8312B','verde':'#2F8A3E','bianco':'#FFFFFF','nero':'#1A1A1A','giallo':'#F2C230','blu':'#1F4FB8','arancione':'#EE7A22','Il mio colore preferito è il blu':'#1F4FB8'};
+const EMBLEM = {l1:'👋', l2:'🤝', l3:'☕', l4:'🔢', l5:'🗺️', l6:'🧩', l7:'🍝', l8:'🎨'};
 
 const SCEN = [
   {id:'bar', it:'Al bar', ru:'Закажи кофе и что-нибудь поесть в римском баре.', en:'Order a coffee and something to eat at a bar in Rome.',
@@ -337,6 +426,8 @@ const T = {
     leadFirst:'Первый урок займёт пять минут. После него ты сможешь поздороваться и поблагодарить по-итальянски.',
     leadNext:'Следующий урок ждёт. Пара минут каждый день работает лучше, чем час раз в неделю.',
     streak:'Дней подряд', words:'Слов и фраз', due:'К повторению',
+    progress:(a, b) => `Пройдено уроков: ${a} из ${b}`, week:'Эта неделя', days:['Пн','Вт','Ср','Чт','Пт','Сб','Вс'],
+    sfx:'Звуки ответов', sfxNote:'Короткий сигнал при верном и неверном ответе.',
     lsub:(l, n) => `${l}, ${n} слов и фраз`, start:'Начать', lockedLesson:'Урок закрыт',
     lessonN:n => `Урок ${n}`, kLearn:'Новое: послушай и повтори вслух', listen:'Послушать', listenAgain:'Послушать ещё раз',
     kPickTr:'Выбери перевод', kPickIt:'Как сказать по-итальянски?', kListen:'Послушай и выбери, что прозвучало', kBuild:'Собери фразу',
@@ -396,6 +487,8 @@ ${hist}
     leadFirst:'The first lesson takes five minutes. After it you’ll be able to say hello and thank you in Italian.',
     leadNext:'Your next lesson is waiting. A few minutes every day works better than an hour once a week.',
     streak:'Day streak', words:'Words & phrases', due:'To review',
+    progress:(a, b) => `Lessons done: ${a} of ${b}`, week:'This week', days:['Mo','Tu','We','Th','Fr','Sa','Su'],
+    sfx:'Answer sounds', sfxNote:'A short tone for right and wrong answers.',
     lsub:(l, n) => `${l}, ${n} words and phrases`, start:'Start', lockedLesson:'Lesson locked',
     lessonN:n => `Lesson ${n}`, kLearn:'New: listen and repeat out loud', listen:'Listen', listenAgain:'Listen again',
     kPickTr:'Pick the translation', kPickIt:'How do you say it in Italian?', kListen:'Listen and pick what you heard', kBuild:'Build the phrase',
@@ -489,11 +582,55 @@ function setLang(lang){
 }
 
 const dayKey = d => d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate();
+if (!Array.isArray(S.days)) S.days = S.last ? [S.last] : [];
 function touchStreak(){
   const today = dayKey(new Date()), yest = dayKey(new Date(Date.now() - DAY));
   if (S.last === today) return;
   S.streak = S.last === yest ? S.streak + 1 : 1;
-  S.last = today; save();
+  S.last = today;
+  S.days = [...S.days.filter(d => d !== today), today].slice(-60);
+  save();
+}
+
+/* ---------- sound effects & confetti ---------- */
+if (S.sfx === undefined) S.sfx = true;
+let actx = null;
+function sfx(kind){
+  if (!S.sfx) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const notes = kind === 'ok' ? [[660, 0], [880, .09]] : kind === 'bad' ? [[220, 0], [185, .12]] : [[523, 0], [659, .12], [784, .24], [1047, .36]];
+    notes.forEach(([f, t]) => {
+      const o = actx.createOscillator(), g = actx.createGain(), at = actx.currentTime + t;
+      o.type = kind === 'bad' ? 'triangle' : 'sine'; o.frequency.value = f;
+      g.gain.setValueAtTime(0, at); g.gain.linearRampToValueAtTime(.18, at + .015); g.gain.exponentialRampToValueAtTime(.001, at + .28);
+      o.connect(g).connect(actx.destination); o.start(at); o.stop(at + .3);
+    });
+  } catch (e) {}
+}
+function confetti(){
+  if (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  const c = document.createElement('canvas'); c.className = 'confetti';
+  document.body.appendChild(c);
+  const dpr = window.devicePixelRatio || 1, W = innerWidth, H = innerHeight;
+  c.width = W * dpr; c.height = H * dpr; const x = c.getContext('2d'); x.scale(dpr, dpr);
+  const cs = getComputedStyle(document.documentElement);
+  const cols = ['--lemon','--sea','--olive','--brick'].map(v => cs.getPropertyValue(v).trim());
+  const P = Array.from({length:90}, () => ({x:W / 2 + (Math.random() - .5) * 80, y:H * .35, vx:(Math.random() - .5) * 9, vy:-Math.random() * 9 - 4, r:Math.random() * 6.28, vr:(Math.random() - .5) * .3, w:6 + Math.random() * 6, c:cols[Math.random() * cols.length | 0]}));
+  const t0 = performance.now();
+  (function frame(now){
+    const k = (now - t0) / 1800; x.clearRect(0, 0, W, H);
+    P.forEach(p => { p.vy += .28; p.x += p.vx; p.y += p.vy; p.r += p.vr; x.save(); x.globalAlpha = Math.max(0, 1 - k); x.translate(p.x, p.y); x.rotate(p.r); x.fillStyle = p.c; x.fillRect(-p.w / 2, -p.w / 4, p.w, p.w / 2); x.restore(); });
+    if (k < 1) requestAnimationFrame(frame); else c.remove();
+  })(t0);
+}
+
+/* ---------- pictures ---------- */
+function picHtml(it, cls){
+  if (SWATCH[it]) return `<span class="pic swatch ${cls || ''}" style="--sw:${SWATCH[it]}" aria-hidden="true"></span>`;
+  const p = PIC[it]; if (!p) return '';
+  return `<span class="pic ${/^\d+$/.test(p) ? 'digit' : ''} ${cls || ''}" aria-hidden="true">${p}</span>`;
 }
 function currentStreak(){
   const today = dayKey(new Date()), yest = dayKey(new Date(Date.now() - DAY));
@@ -531,7 +668,7 @@ if ('speechSynthesis' in window) {
 }
 
 /* Готовые нейросетевые записи: 'фраза': имя файла в audio/<голос>/. Если запись есть, играет она, иначе голос телефона. */
-const AUDIO = {"Ciao":"a810368ec4","Buongiorno":"ce03a992c6","Buonasera":"df4722bf59","Arrivederci":"3d6ec15abd","Grazie":"b36d3dde00","Prego":"7732a2f986","Per favore":"556ce59e70","Per":"f6604e6e83","favore":"5c23dcd036","Scusi":"e44954bdda","Come ti chiami?":"32febe068f","Come":"5949d0ee4d","ti":"41c76e5218","chiami?":"9cb4ffd8c1","Mi chiamo Marco":"2f2d58b75d","Mi":"6b7439b401","chiamo":"3ebf67fcde","Marco":"bf38aa5369","Piacere!":"28964546a2","Di dove sei?":"f0d3263d44","Di":"fe564f789d","dove":"05bcd0e7ce","sei?":"f5a181acfc","Sono di Mosca":"5e823072c8","Sono":"36ce4c49ce","di":"f502e82c25","Mosca":"e94a1d3f97","Come stai?":"7d0277b3bb","stai?":"256884ffbc","Sto bene, grazie":"18de1f8c55","Sto":"39a6c7e7e5","bene,":"e8a7497019","grazie":"bd57224e34","E tu?":"095541f22c","E":"e0184adedf","tu?":"f9222a9e70","Un caffè, per favore":"7516f02f06","Un":"1844cc8a17","caffè,":"93474c4375","per":"8205aed0c4","Vorrei un cornetto":"f71fe43b74","Vorrei":"29f25a75a9","un":"dd3bc42b2c","cornetto":"92e791bf17","Un bicchiere d’acqua":"9c13bc87fd","bicchiere":"4f4b5308f6","d’acqua":"bf97149a8c","Il conto, per favore":"dfadee2b80","Il":"9e855a218f","conto,":"d8d1fb18fa","Quanto costa?":"ebea6fea9b","Quanto":"2e4324f402","costa?":"23ca9c8066","Ecco":"5ea55c537d","Un bicchiere di vino rosso":"8272e2296c","vino":"f0e4876639","rosso":"959ea3daf0","Va bene":"701a42c8b2","Va":"5f47996c3d","bene":"2376b80336","uno":"81b6f50734","due":"30cdf73eff","tre":"11aa6adc77","quattro":"973ef383d4","cinque":"af7a8d0996","sei":"5ef4186b65","sette":"6824e8afca","otto":"902287fd10","nove":"7f52fd1901","dieci":"7d6c4de44a","Scusi, dov’è la stazione?":"a238b23e50","Scusi,":"858b8ea59a","dov’è":"803dc4b19a","la":"3efd4c0fe1","stazione?":"6c8c64c2f7","a destra":"168fd9d9b3","a":"86f7e437fa","destra":"c5a1ad5b7e","a sinistra":"3b72eca895","sinistra":"1ce2596b1e","sempre dritto":"5b8041f00b","sempre":"1f4a19c28a","dritto":"8885c461dd","È vicino?":"2840769078","È":"f620eadc41","vicino?":"7fc66db2cf","È lontano":"0a47a7ff69","lontano":"2cf0c816f5","Dov’è il bagno?":"bbc5aee98e","Dov’è":"f61e093150","il":"53c1d6afa3","bagno?":"26ee3b1250","la fermata dell’autobus":"c267fecaa7","fermata":"184ced9da2","dell’autobus":"189b8056fa","io sono":"7b4bb96442","io":"5a25823018","sono":"bf2a287298","tu sei":"ad230f7a4f","tu":"a3da4c6307","lui è":"f8d2ec8349","lui":"843da8e914","è":"151666e2e2","noi siamo":"fb77f63ade","noi":"8a1de1ef72","siamo":"a91d9540cb","voi siete":"2d0e86a4bd","voi":"56c46bef6e","siete":"c0bdfc8b52","loro sono":"93c2fca92d","loro":"af715f9b7e","Sono stanco":"103d7d958e","stanco":"076cbff540","Siamo amici":"890a7102a9","Siamo":"de23dc90f1","amici":"dc1862e1b2","Buongiorno! Cosa prendi?":"7ce28f9d65","Ciao! Io sono Giulia. E tu, come ti chiami?":"d14be4990e","Sì? Posso aiutarti?":"1c57d17241","Ciao! Come stai oggi?":"ad1889d1d6","Ciao! Come stai? Io sto bene, grazie.":"38b0257557"};
+const AUDIO = {"Ciao":"a810368ec4","Buongiorno":"ce03a992c6","Buonasera":"df4722bf59","Arrivederci":"3d6ec15abd","Grazie":"b36d3dde00","Prego":"7732a2f986","Per favore":"556ce59e70","Per":"f6604e6e83","favore":"5c23dcd036","Scusi":"e44954bdda","Come ti chiami?":"32febe068f","Come":"5949d0ee4d","ti":"41c76e5218","chiami?":"9cb4ffd8c1","Mi chiamo Marco":"2f2d58b75d","Mi":"6b7439b401","chiamo":"3ebf67fcde","Marco":"bf38aa5369","Piacere!":"28964546a2","Di dove sei?":"f0d3263d44","Di":"fe564f789d","dove":"05bcd0e7ce","sei?":"f5a181acfc","Sono di Mosca":"5e823072c8","Sono":"36ce4c49ce","di":"f502e82c25","Mosca":"e94a1d3f97","Come stai?":"7d0277b3bb","stai?":"256884ffbc","Sto bene, grazie":"18de1f8c55","Sto":"39a6c7e7e5","bene,":"e8a7497019","grazie":"bd57224e34","E tu?":"095541f22c","E":"e0184adedf","tu?":"f9222a9e70","Un caffè, per favore":"7516f02f06","Un":"1844cc8a17","caffè,":"93474c4375","per":"8205aed0c4","Vorrei un cornetto":"f71fe43b74","Vorrei":"29f25a75a9","un":"dd3bc42b2c","cornetto":"92e791bf17","Un bicchiere d’acqua":"9c13bc87fd","bicchiere":"4f4b5308f6","d’acqua":"bf97149a8c","Il conto, per favore":"dfadee2b80","Il":"9e855a218f","conto,":"d8d1fb18fa","Quanto costa?":"ebea6fea9b","Quanto":"2e4324f402","costa?":"23ca9c8066","Ecco":"5ea55c537d","Un bicchiere di vino rosso":"8272e2296c","vino":"f0e4876639","rosso":"959ea3daf0","Va bene":"701a42c8b2","Va":"5f47996c3d","bene":"2376b80336","uno":"81b6f50734","due":"30cdf73eff","tre":"11aa6adc77","quattro":"973ef383d4","cinque":"af7a8d0996","sei":"5ef4186b65","sette":"6824e8afca","otto":"902287fd10","nove":"7f52fd1901","dieci":"7d6c4de44a","Scusi, dov’è la stazione?":"a238b23e50","Scusi,":"858b8ea59a","dov’è":"803dc4b19a","la":"3efd4c0fe1","stazione?":"6c8c64c2f7","a destra":"168fd9d9b3","a":"86f7e437fa","destra":"c5a1ad5b7e","a sinistra":"3b72eca895","sinistra":"1ce2596b1e","sempre dritto":"5b8041f00b","sempre":"1f4a19c28a","dritto":"8885c461dd","È vicino?":"2840769078","È":"f620eadc41","vicino?":"7fc66db2cf","È lontano":"0a47a7ff69","lontano":"2cf0c816f5","Dov’è il bagno?":"bbc5aee98e","Dov’è":"f61e093150","il":"53c1d6afa3","bagno?":"26ee3b1250","la fermata dell’autobus":"c267fecaa7","fermata":"184ced9da2","dell’autobus":"189b8056fa","io sono":"7b4bb96442","io":"5a25823018","sono":"bf2a287298","tu sei":"ad230f7a4f","tu":"a3da4c6307","lui è":"f8d2ec8349","lui":"843da8e914","è":"151666e2e2","noi siamo":"fb77f63ade","noi":"8a1de1ef72","siamo":"a91d9540cb","voi siete":"2d0e86a4bd","voi":"56c46bef6e","siete":"c0bdfc8b52","loro sono":"93c2fca92d","loro":"af715f9b7e","Sono stanco":"103d7d958e","stanco":"076cbff540","Siamo amici":"890a7102a9","Siamo":"de23dc90f1","amici":"dc1862e1b2","la pizza":"ee2f6479e8","pizza":"1f6ccd2be7","la pasta":"edfeafb056","pasta":"46139b0b16","il gelato":"841df5120f","gelato":"0d9f0bcac6","il pane":"a22e03b7ee","pane":"61747d255f","il formaggio":"a9b1512042","formaggio":"bee9ed1682","la frutta":"3e22d73a06","frutta":"04c6186fdb","Ho fame":"b8b5f1e5c6","Ho":"bb90fc9b1e","fame":"4a43d29dc8","È buonissimo!":"80bba398d6","buonissimo!":"5d1e9c98c3","verde":"2030abee0f","bianco":"8886c797a0","nero":"517e230ac1","giallo":"ed721f4b18","blu":"53c59901c1","arancione":"55d1ae1ad0","Il mio colore preferito è il blu":"c68c133cc2","mio":"9bbe4ff460","colore":"4fd52272a1","preferito":"ec14785461","Buongiorno! Cosa prendi?":"7ce28f9d65","Ciao! Io sono Giulia. E tu, come ti chiami?":"d14be4990e","Sì? Posso aiutarti?":"1c57d17241","Ciao! Come stai oggi?":"ad1889d1d6","Ciao! Come stai? Io sto bene, grazie.":"38b0257557"};
 const AI_VOICES = [{id:'f', name:'Isabella', meta:'female'}, {id:'m', name:'Diego', meta:'male'}];
 if (!S.aiVoice) S.aiVoice = 'f';
 const clipUrl = (text, v) => AUDIO[text] && v && v !== 'off' ? `audio/${v}/${AUDIO[text]}.mp3` : null;
@@ -609,6 +746,29 @@ function langSwitch(){
   return `<div class="langsw" role="group" aria-label="${L().langAria}">${['ru','en'].map(l =>
     `<button data-action="lang" data-lang="${l}" aria-pressed="${S.lang === l}">${l.toUpperCase()}</button>`).join('')}</div>`;
 }
+/* Открытка: побережье с домиками, цвета из токенов темы. */
+const POSTCARD = `<svg class="postcard" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax slice" role="img" aria-label="Italian coast">
+  <rect width="400" height="120" class="pc-sky"/>
+  <circle cx="318" cy="38" r="20" class="pc-sun"/>
+  <path d="M0 78 Q60 40 120 62 T240 58 T400 70 V120 H0Z" class="pc-hill"/>
+  <path d="M10 82 Q50 48 110 70 L130 120 H0 V86Z" class="pc-cliff"/>
+  <g class="pc-houses">
+    <rect x="22" y="64" width="16" height="16" class="h1"/><rect x="40" y="58" width="14" height="22" class="h2"/><rect x="56" y="66" width="18" height="14" class="h3"/>
+    <rect x="76" y="62" width="12" height="18" class="h1"/><rect x="34" y="80" width="18" height="14" class="h3"/><rect x="54" y="80" width="16" height="16" class="h2"/><rect x="72" y="80" width="18" height="12" class="h1"/>
+    <rect x="44" y="40" width="7" height="18" class="h4"/><path d="M43.5 40 L47.5 33 L51.5 40Z" class="h4"/>
+    <g class="pc-win"><rect x="27" y="69" width="3" height="4"/><rect x="45" y="63" width="3" height="4"/><rect x="61" y="70" width="3" height="4"/><rect x="39" y="84" width="3" height="4"/><rect x="59" y="85" width="3" height="4"/><rect x="79" y="84" width="3" height="4"/></g>
+  </g>
+  <path d="M0 96 Q25 90 50 96 T100 96 T150 96 T200 96 T250 96 T300 96 T350 96 T400 96 V120 H0Z" class="pc-sea"/>
+  <path d="M0 106 Q25 101 50 106 T100 106 T150 106 T200 106 T250 106 T300 106 T350 106 T400 106 V120 H0Z" class="pc-sea2"/>
+  <g class="pc-boat"><path d="M236 94 H262 L256 100 H242Z"/><path d="M249 93 V76 L260 92Z" class="sail"/></g>
+</svg>`;
+function weekHtml(){
+  const now = new Date(), dow = (now.getDay() + 6) % 7, today = dayKey(now), days = new Set(S.days);
+  return `<div class="week" aria-label="${L().week}"><span class="wlbl">${L().week}</span><div class="wdays">${L().days.map((d, i) => {
+    const dt = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dow + i), k = dayKey(dt);
+    return `<span class="wd ${days.has(k) ? 'on' : ''} ${k === today ? 'today' : ''} ${i > dow ? 'future' : ''}"><i>${days.has(k) ? '✓' : ''}</i>${d}</span>`;
+  }).join('')}</div></div>`;
+}
 function renderCourse(){
   const done = new Set(S.done);
   const cur = LESSONS.findIndex(l => !done.has(l.id));
@@ -621,18 +781,22 @@ function renderCourse(){
         <button class="gear" data-action="settings" aria-label="${L().settingsAria}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5L6 9H3v6h3l5 4V5z"/><path d="M15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></button></div>
       <h1 class="it greet">${greet}</h1>
       <p class="lead">${lead}</p>
+      ${POSTCARD}
       <dl class="stats">
         <div><dt>${L().streak}</dt><dd>${currentStreak()}</dd></div>
         <div><dt>${L().words}</dt><dd>${Object.keys(S.cards).length}</dd></div>
         <div><dt>${L().due}</dt><dd>${dueCards().length}</dd></div>
       </dl>
+      ${weekHtml()}
+      <div class="cprog"><div class="cprog-top"><span>${L().progress(done.size, LESSONS.length)}</span><span>${Math.round(done.size / LESSONS.length * 100)}%</span></div>
+        <div class="track" role="progressbar" aria-valuemin="0" aria-valuemax="${LESSONS.length}" aria-valuenow="${done.size}"><div style="width:${done.size / LESSONS.length * 100}%"></div></div></div>
     </header>
     <ol class="path">${LESSONS.map((l, i) => {
       const st = done.has(l.id) ? 'done' : i === cur ? 'current' : 'locked';
       return `<li class="${st}"><button class="lrow" data-action="lesson" data-id="${l.id}" ${st === 'locked' ? `disabled aria-label="${L().lockedLesson}"` : ''}>
         <span class="num">${st === 'done' ? '✓' : i + 1}</span>
         <span class="ltext"><span class="it ltitle">${l.it}</span><span class="lsub">${esc(L().lsub(tr(l), l.items.length))}</span></span>
-        ${st === 'current' ? `<span class="go">${L().start}</span>` : ''}
+        ${st === 'current' ? `<span class="go">${L().start}</span>` : `<span class="emb" aria-hidden="true">${EMBLEM[l.id] || ''}</span>`}
       </button></li>`;
     }).join('')}</ol>`;
   updateBadge();
@@ -673,10 +837,10 @@ function showStep(){
   let html = '';
   if (st.type === 'tip') {
     const n = LESSONS.indexOf(R.lesson) + 1;
-    html = `<p class="kicker">${L().lessonN(n)}</p><h2 class="it big">${R.lesson.it}</h2><p class="ru-sub">${esc(tr(R.lesson))}</p><div class="tip">${esc(S.lang === 'en' ? R.lesson.tipEn : R.lesson.tip)}</div>`;
+    html = `<div class="emblem" aria-hidden="true">${EMBLEM[R.lesson.id] || ''}</div><p class="kicker">${L().lessonN(n)}</p><h2 class="it big">${R.lesson.it}</h2><p class="ru-sub">${esc(tr(R.lesson))}</p><div class="tip">${esc(S.lang === 'en' ? R.lesson.tipEn : R.lesson.tip)}</div>`;
     setBtn(L().start, 'next');
   } else if (st.type === 'learn') {
-    html = `<p class="kicker">${L().kLearn}</p><button class="say big-say" data-say="${esc(item.it)}" aria-label="${L().listen}">${ICON_SAY}</button><h2 class="it word"><span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></h2>${pronHtml(item.it)}<p class="trans">${esc(tr(item))}</p>`;
+    html = `<p class="kicker">${L().kLearn}</p><div class="learnrow">${picHtml(item.it, 'lg')}<button class="say big-say" data-say="${esc(item.it)}" aria-label="${L().listen}">${ICON_SAY}</button></div><h2 class="it word"><span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></h2>${pronHtml(item.it)}<p class="trans">${esc(tr(item))}</p>`;
     setBtn(L().next, 'next'); speak(item.it);
   } else if (st.type === 'pick_tr') {
     html = `<p class="kicker">${L().kPickTr}</p><div class="prompt"><button class="say" data-say="${esc(item.it)}" aria-label="${L().listen}">${ICON_SAY}</button><span class="it pword tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(item.it)}</span></div>
@@ -684,7 +848,7 @@ function showStep(){
     setBtn(L().check, 'check', true); speak(item.it);
   } else if (st.type === 'pick_it' || st.type === 'listen') {
     const head = st.type === 'pick_it'
-      ? `<p class="kicker">${L().kPickIt}</p><p class="pru">${esc(tr(item))}</p>`
+      ? `<p class="kicker">${L().kPickIt}</p><div class="prow">${picHtml(item.it)}<p class="pru">${esc(tr(item))}</p></div>`
       : `<p class="kicker">${L().kListen}</p><div class="prompt"><button class="say big-say" data-say="${esc(item.it)}" aria-label="${L().listenAgain}">${ICON_SAY}</button></div>`;
     html = head + `<div class="opts">${options(item, x => x.it).map(v => `<button class="opt it" data-action="opt" data-val="${esc(v)}" aria-pressed="false">${esc(v)}</button>`).join('')}</div>`;
     setBtn(L().check, 'check', true);
@@ -733,7 +897,8 @@ function check(){
     fb.innerHTML = `${L().correctIs}<span class="it">${correct === item.it ? `<span class="tap" role="button" tabindex="0" data-say="${esc(item.it)}">${esc(correct)}</span>` : esc(correct)}</span>${pronHtml(item.it)}`;
     if (!st.retry) R.steps.push({...st, retry:true});
   }
-  speak(item.it);
+  sfx(ok ? 'ok' : 'bad');
+  setTimeout(() => { if (R && R.steps[R.i] === st) speak(item.it); }, 380);
   setBtn(L().next, 'next');
 }
 function next(){
@@ -749,10 +914,11 @@ function finish(){
   touchStreak(); save();
   $('#bar').style.width = '100%';
   $('#fb').hidden = true;
-  $('#lbody').innerHTML = `<p class="kicker">${L().lessonDone}</p><h2 class="it big">Bravo!</h2>
+  $('#lbody').innerHTML = `<p class="kicker">${L().lessonDone}</p><div class="emblem" aria-hidden="true">🏆</div><h2 class="it big">Bravo!</h2>
     <p class="result">${L().firstTry(R.first, R.total)}</p>
     <p>${added ? L().added(added) : L().reviewedOld}</p>`;
   setBtn(L().finish, 'close');
+  sfx('win'); confetti();
 }
 $('#lbtn').addEventListener('click', () => {
   if (!R) return;
@@ -792,6 +958,7 @@ function renderSettings(){
     <p class="h3">${L().phoneVoice}</p>
     <p class="muted">${S.aiVoice === 'off' ? L().phoneAll : L().phoneChat} ${L().phoneHint}</p>
     ${list}
+    <label class="sfxrow" for="sfx"><span><span class="h3">${L().sfx}</span><span class="muted">${L().sfxNote}</span></span><input type="checkbox" id="sfx" role="switch" ${S.sfx ? 'checked' : ''}></label>
     <p class="h3">${L().speed}</p>
     <div class="rate"><span class="muted">${L().slow}</span><input type="range" id="rate" min="0.6" max="1.1" step="0.05" value="${S.rate || 0.85}" aria-label="${L().speedAria}"><output id="rateOut">${Math.round((S.rate || 0.85) * 100)}%</output></div>
     <button class="secondary" data-action="preview" style="width:100%;margin-bottom:26px">${L().previewSpeed}</button>
@@ -801,6 +968,7 @@ function renderSettings(){
       <p>${L().helpAndroid}</p>
       <p>${L().helpReload}</p>
     </div>`;
+  $('#sfx').addEventListener('change', e => { S.sfx = e.target.checked; save(); if (S.sfx) sfx('ok'); });
   $('#rate').addEventListener('input', e => {
     S.rate = +e.target.value; $('#rateOut').textContent = Math.round(S.rate * 100) + '%'; save();
   });
@@ -822,7 +990,7 @@ function renderReview(){
   if (RV && RV.queue.length) {
     const k = RV.queue[0];
     v.innerHTML = `<div class="rv-top"><span>${L().left(RV.queue.length)}</span><button class="link" data-action="rv-stop">${L().stop}</button></div>
-      <div class="flash"><button class="say big-say" data-say="${esc(k)}" aria-label="${L().listen}">${ICON_SAY}</button>
+      <div class="flash">${RV.shown ? picHtml(k, 'lg') : ''}<button class="say big-say" data-say="${esc(k)}" aria-label="${L().listen}">${ICON_SAY}</button>
         <p class="it word"><span class="tap" role="button" tabindex="0" data-say="${esc(k)}">${esc(k)}</span></p>${pronHtml(k)}${RV.shown ? `<p class="trans">${esc(cardTr(k))}</p>` : ''}</div>
       ${RV.shown
         ? `<div class="two"><button class="secondary" data-action="rv-forget">${L().forgot}</button><button class="primary" data-action="rv-know">${L().know}</button></div>`
